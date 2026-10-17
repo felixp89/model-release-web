@@ -22,22 +22,32 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: App-Ordner finden
+        id: dir
+        run: |
+          if [ -f site/index.html ]; then DIR=site; else DIR=.; fi
+          echo "Gefunden: $DIR"
+          ls -la "$DIR"
+          if [ ! -f "$DIR/index.html" ]; then echo "index.html fehlt – bitte die Dateien aus dem Ordner 'site' hochladen"; exit 1; fi
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+
       - name: PDF-Bibliothek und Schriften einbauen
         run: |
-          curl -fsSL -o site/jspdf.umd.min.js https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
-          mkdir -p site/fonts
+          DIR="${{ steps.dir.outputs.dir }}"
+          curl -fsSL -o "$DIR/jspdf.umd.min.js" https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+          mkdir -p "$DIR/fonts"
           for wgt in 400 500 600 700; do
-            curl -fsSL -o site/fonts/instrument-sans-$wgt.woff2 https://cdn.jsdelivr.net/fontsource/fonts/instrument-sans@latest/latin-$wgt-normal.woff2 || echo "Schrift $wgt fehlt"
+            curl -fsSL -o "$DIR/fonts/instrument-sans-$wgt.woff2" https://cdn.jsdelivr.net/fontsource/fonts/instrument-sans@latest/latin-$wgt-normal.woff2 || echo "Schrift $wgt fehlt"
           done
           for wgt in 400 600; do
-            curl -fsSL -o site/fonts/source-serif-4-$wgt.woff2 https://cdn.jsdelivr.net/fontsource/fonts/source-serif-4@latest/latin-$wgt-normal.woff2 || echo "Schrift $wgt fehlt"
+            curl -fsSL -o "$DIR/fonts/source-serif-4-$wgt.woff2" https://cdn.jsdelivr.net/fontsource/fonts/source-serif-4@latest/latin-$wgt-normal.woff2 || echo "Schrift $wgt fehlt"
           done
-          # Versionsnummer für Updates (Offline-Speicher wird damit erneuert)
-          sed -i "s/__BUILD__/${{ github.run_number }}/g" site/sw.js site/web-bridge.js
+          sed -i "s/__BUILD__/${{ github.run_number }}/g" "$DIR/sw.js" "$DIR/web-bridge.js"
+          rm -rf "$DIR/.github" "$DIR/build-web.py" "$DIR/ANLEITUNG.md" 2>/dev/null || true
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: ${{ steps.dir.outputs.dir }}
       - id: deployment
         uses: actions/deploy-pages@v4
