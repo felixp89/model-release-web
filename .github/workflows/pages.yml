@@ -1,0 +1,43 @@
+name: Web-App veröffentlichen
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: PDF-Bibliothek und Schriften einbauen
+        run: |
+          curl -fsSL -o site/jspdf.umd.min.js https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+          mkdir -p site/fonts
+          for wgt in 400 500 600 700; do
+            curl -fsSL -o site/fonts/instrument-sans-$wgt.woff2 https://cdn.jsdelivr.net/fontsource/fonts/instrument-sans@latest/latin-$wgt-normal.woff2 || echo "Schrift $wgt fehlt"
+          done
+          for wgt in 400 600; do
+            curl -fsSL -o site/fonts/source-serif-4-$wgt.woff2 https://cdn.jsdelivr.net/fontsource/fonts/source-serif-4@latest/latin-$wgt-normal.woff2 || echo "Schrift $wgt fehlt"
+          done
+          # Versionsnummer für Updates (Offline-Speicher wird damit erneuert)
+          sed -i "s/__BUILD__/${{ github.run_number }}/g" site/sw.js site/web-bridge.js
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
