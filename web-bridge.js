@@ -148,6 +148,25 @@
     const home = document.getElementById("v-home"); if(home) home.prepend(bar);
   }
 
+  /* ---------- „App installieren“ für Android/Windows/Mac (Chrome, Edge) ---------- */
+  let installEvt = null;
+  window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; showInstallButton(); });
+  window.addEventListener("appinstalled", () => { installEvt = null; const b = document.getElementById("webInstallBar"); if(b) b.remove(); toast("Model Release ist installiert."); });
+  function showInstallButton(){
+    if(document.getElementById("webInstallBar") || cache.kv["__installClosed"]) return;
+    const home = document.getElementById("v-home"); if(!home) return;
+    const bar = document.createElement("div"); bar.id = "webInstallBar";
+    bar.className = "banner"; bar.style.cssText = "margin:0 0 18px";
+    bar.innerHTML = '<p style="margin:0;flex:1"><b>Model Release als App installieren</b><br><span class="hint">Startet wie ein normales Programm, auch offline.</span></p><button class="btn pri" id="webInstallGo">Installieren</button><button class="btn ghost" id="webInstallNo" aria-label="Schließen" style="padding:6px 12px">✕</button>';
+    home.prepend(bar);
+    document.getElementById("webInstallGo").onclick = async () => {
+      if(!installEvt) return; installEvt.prompt();
+      try{ const r = await installEvt.userChoice; if(r && r.outcome === "accepted") bar.remove(); }catch(e){}
+      installEvt = null;
+    };
+    document.getElementById("webInstallNo").onclick = () => { bar.remove(); cache.kv["__installClosed"] = "1"; put("kv:__installClosed", "1"); };
+  }
+
   /* ---------- Start: Speicher laden, dann die App starten ---------- */
   async function start(){
     try{ db = await openDb(); await loadAll(); }
@@ -155,6 +174,7 @@
     try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
     if(typeof window.__startApp === "function") window.__startApp();
     installHint();
+    if(installEvt) showInstallButton();
     if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
   }
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();

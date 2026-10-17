@@ -354,6 +354,9 @@ fieldset.err legend,.card.err > b{color:var(--accent)}
 .intro-dots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block;transition:width .2s}
 .intro-dots i.on{background:var(--accent);width:22px;border-radius:4px}
 .intro-foot .btn{min-width:140px}
+details.orig{margin-top:16px;text-align:left}
+details.orig summary{cursor:pointer;color:var(--muted);font-size:.9rem;text-align:center}
+details.orig .paper{margin-top:12px}
 .legal{border-left:3px solid var(--line);padding:2px 0 2px 10px;margin:14px 0 0}
 .note{font-size:.88rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:14px}
 
@@ -2791,6 +2794,20 @@ $("#pendReturnFile").onchange=async e=>{
     const pdf=fs.find(f=>f.type==="application/pdf"||/\.pdf$/i.test(f.name)), imgs=fs.filter(f=>f.type.startsWith("image/"));
     if(!pdf&&!imgs.length){ toast("Bitte eine PDF oder Fotos auswählen."); return; }
     const b64 = pdf ? (await readAsDataURL(pdf)).split(",")[1] : await imagesToPdfBase64(imgs);
+    if(pdf){
+      const pkg=extractPayload(b64);
+      if(pkg&&pkg.contract){
+        const k=pkg.contract;
+        if(k.id!==c.id){ toast("Diese PDF gehört zu einem anderen Vertrag."); return; }
+        const ok=fmtCode(await sha(JSON.stringify(k)))===pkg.code && sameTerms(c,k);
+        if(!ok){ toast("⚠️ Der zurückgeschickte Vertrag weicht ab. Die Unterschrift wird nicht übernommen."); return; }
+        if(!(k.signatures&&k.signatures.model)){ toast("In dieser PDF fehlt noch die Unterschrift des Models."); return; }
+        c.signatures={...(c.signatures||{}),model:k.signatures.model}; if(k.signatures.guardian) c.signatures.guardian=k.signatures.guardian;
+        c.modelSign=k.sign||null; c.pending=false; c.signedAt=new Date().toISOString(); c.signedViaApp={at:c.signedAt,code:pkg.code};
+        Store.save(c); loadContracts(); openDone(c,true,true); scheduleReminders();
+        toast(`${k.model.name} hat unterschrieben – der Vertrag ist jetzt komplett.`); return;
+      }
+    }
     if(!Imports.save(c.id,b64)) throw 0;
     c.pending=false; c.returned=true; c.returnedAt=new Date().toISOString(); c.signedAt=c.returnedAt;
     Store.save(c); loadContracts(); openDone(c,false); toast("Unterschriebener Vertrag gespeichert.");
@@ -2847,8 +2864,14 @@ function openDone(c, fresh, saved){
        <p class="hint" style="margin:0 0 14px">Importierter Vertrag${c.note?" · "+esc(c.note):""}</p>
        <button class="btn pri" id="impView">PDF öffnen</button>
        <label class="imp-future"><input type="checkbox" id="impFuture" ${c.futureValid?"checked":""}><span>Gilt auch für zukünftige Shootings</span></label></div>`
+    : current.returned
+    ? `<div class="imp-card"><div class="ic">PDF</div><p style="margin:0 0 4px;font-family:var(--sans)"><b>Unterschriebene Fassung</b></p>
+       <p class="hint" style="margin:0 0 14px">Von ${esc(c.model.name)} unterschrieben zurückerhalten${c.returnedAt?" am "+deDate(c.returnedAt.slice(0,10)):""}.</p>
+       <button class="btn pri" id="retOpen2">PDF öffnen</button>
+       <details class="orig"><summary>Ursprüngliche Fassung ansehen (nur deine Unterschrift)</summary><div class="paper">${contractHTML(current,true)}</div></details></div>`
     : contractHTML(current,true);
-  $("#donePaper").classList.toggle("paper",!current.imported);
+  $("#donePaper").classList.toggle("paper",!current.imported&&!current.returned);
+  if($("#retOpen2")) $("#retOpen2").onclick=()=>{ if(NATIVE&&NATIVE.openImport) NATIVE.openImport(current.id); else window.open(URL.createObjectURL(b64ToBlob(Imports.read(current.id),"application/pdf")),"_blank"); };
   if(current.imported && $("#impFuture")) $("#impFuture").onchange=e=>{
     current.futureValid=e.target.checked; saveCurrent();
     toast(e.target.checked?"Gespeichert: gilt auch für zukünftige Shootings.":"Gespeichert: gilt nur für dieses Shooting.");
