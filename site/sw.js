@@ -1,6 +1,6 @@
 /* Offline-Funktion: App-Dateien zwischenspeichern, Updates beim nächsten Start laden */
 const CACHE = "model-release-__BUILD__";
-const FILES = ["./", "index.html", "web-bridge.js", "jspdf.umd.min.js", "manifest.webmanifest",
+const FILES = ["./", "index.html", "web-bridge.js", "jspdf.umd.min.js", "pdf.min.js", "pdf.worker.min.js", "manifest.webmanifest",
   "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png",
   "fonts/instrument-sans-400.woff2", "fonts/instrument-sans-500.woff2", "fonts/instrument-sans-600.woff2",
   "fonts/instrument-sans-700.woff2", "fonts/source-serif-4-400.woff2", "fonts/source-serif-4-600.woff2"];

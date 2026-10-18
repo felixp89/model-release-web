@@ -401,6 +401,12 @@ label.f[data-k="tBody"]{position:relative}
 #guide .intro-foot .btn.ghost{min-width:0}
 .hint-steps{margin:6px 0 4px;padding-left:22px}
 .hint-steps li{margin:6px 0;line-height:1.45;font-size:.95rem}
+.xwrap .xl{display:block;font-size:.92rem;margin-bottom:4px}
+.xwrap .xl small{color:var(--muted);font-weight:400}
+.xrow{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr) 38px;gap:6px;margin-bottom:6px;align-items:center}
+.xrow select,.xrow input{width:100%;padding:10px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:16px;min-width:0}
+.xrow .mdel{width:38px;height:38px}
+.xwrap .lnk-inline{font-size:.9rem}
 .legal{border-left:3px solid var(--line);padding:2px 0 2px 10px;margin:14px 0 0}
 .note{font-size:.88rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:14px}
 
@@ -466,9 +472,11 @@ details.help code{font-family:ui-monospace,Menlo,Consolas,monospace;background:v
         <label class="f full" data-k="name">Vor- und Nachname<input id="m_name" autocomplete="name" list="knownNames"></label>
         <datalist id="knownNames"></datalist>
         <div class="known full" id="knownBox" hidden><p id="knownText"></p><button type="button" class="btn" id="knownTake">Daten übernehmen</button></div>
+        <div class="f full xwrap"><span class="xl">Social Media <small>(freiwillig)</small></span><div id="socRows"></div><button type="button" class="lnk-inline" id="socAdd">+ Weitere Plattform</button></div>
         <label class="f full" data-k="adresse">Adresse<input id="m_adresse" autocomplete="street-address" placeholder="Straße Nr., PLZ Ort"></label>
         <label class="f" data-k="telefon">Telefon<span class="inrow"><input id="m_telefon" type="tel" autocomplete="tel" placeholder="0152 …"><button type="button" class="btn ghost pick" id="pickContact" hidden>Aus Kontakten</button></span></label>
         <label class="f" data-k="geburtsdatum">Geburtsdatum<input id="m_geburtsdatum" type="date"></label>
+        <div class="f full xwrap"><span class="xl">Weitere Angaben <small>(freiwillig, z. B. Künstlername oder E-Mail)</small></span><div id="extraRows"></div><button type="button" class="lnk-inline" id="extraAdd">+ Weitere Angabe hinzufügen</button><datalist id="extraKeys"></datalist></div>
         <label class="f" data-k="datum"><span id="lblDatum">Datum des Shootings</span><input id="s_datum" type="date"></label>
         <label class="f" data-k="ort"><span id="lblOrt">Ort des Shootings</span><input id="s_ort"></label>
         <div class="f full loc-pick" id="locWrap" hidden>
@@ -740,7 +748,9 @@ Das Honorar beträgt {Honorar in Euro} Euro.
         <p><code>#</code> am Anfang macht eine Überschrift. Untereinander stehende Zeilen mit <code>[ ]</code> werden eine Auswahl, die du beim Ausfüllen ankreuzt; <code>[x]</code> ist vorausgewählt. <code>[Zusatz]</code> fügt „Zusätzliche Vereinbarungen: Ja/Nein“ mit Textfeld ein. <code>[Feld: Name]</code> fragt beim Ausfüllen einen freien Wert ab (mit <code>= Wert</code> vorausgefüllt, mit <code>= 5 | 10 | 20</code> als Auswahlliste); im Text setzt du ihn mit <code>{Name}</code> ein. <code>[Ab18]</code> sperrt die Vorlage für minderjährige Models. <code>[Rollen: Uploader | Darsteller]</code> benennt „Fotograf/in“ und „Model“ im Kopf und bei den Unterschriften um. <code>[Gegenüber: Eigentümer/in]</code> benennt nur das Gegenüber um. <code>[KeinGeburtsdatum]</code> lässt das Geburtsdatum weg. <code>[OhneKopf]</code> lässt den Block „Zwischen …“ weg, wenn dein Text die Angaben schon selbst enthält.</p>
         <p>Am einfachsten: Tipp auf den Vertragstext. In der großen Ansicht fügst du Bausteine und Platzhalter mit einem Tipp ein.</p>
       </details>
-      <div class="actions" style="margin-top:12px"><button class="btn ghost" id="tplFromTfp">TfP-Text als Start einfügen</button></div>
+      <div class="actions" style="margin-top:12px"><button class="btn" id="tplFromPdf">Aus PDF erstellen</button><button class="btn ghost" id="tplFromTfp">TfP-Text als Start einfügen</button></div>
+      <input type="file" id="tplPdfFile" accept="application/pdf,.pdf" hidden>
+      <p class="hint" style="margin:6px 0 0">„Aus PDF erstellen“ liest einen vorhandenen Vertrag ein und macht daraus einen Vorschlag, den du danach prüfst. Funktioniert mit PDFs, die am Computer erstellt wurden – nicht mit Scans oder Fotos.</p>
     </div>
     <div class="paper" id="tplPreview" style="margin-top:18px" hidden></div>
     <div class="actions">
@@ -789,7 +799,7 @@ Das Honorar beträgt {Honorar in Euro} Euro.
         <div class="logo-box" id="logoBox" hidden><img id="logoImg" alt="Dein Logo"><button class="btn ghost" id="logoDel">Entfernen</button></div>
         <button class="btn" id="logoPick">Logo auswählen</button>
         <input type="file" id="logoFile" accept="image/*" hidden>
-        <label class="f" style="margin-top:12px">Instagram (freiwillig, steht neben deinem Namen)<input id="p_insta" placeholder="z. B. deinname" autocapitalize="off"></label>
+        <div class="f xwrap" style="margin-top:12px"><span class="xl">Social Media <small>(freiwillig, steht im Vertrag unter deinem Namen)</small></span><div id="pSocRows"></div><button type="button" class="lnk-inline" id="pSocAdd">+ Weitere Plattform</button></div>
       </div>
     </div>
 
@@ -1562,6 +1572,7 @@ const noBirth=body=>parseBody(body).some(b=>b.t==="nobirth");
 function fillPlaceholders(text,c){
   const p=c.photographer||settings.photographer;
   const map={name:c.model.name,vorname:firstName(c.model.name),adresse:c.model.adresse,telefon:c.model.telefon,geburtsdatum:deDate(c.model.geburtsdatum),datum:deDate(c.shoot.datum),ort:c.shoot.ort,
+    "instagram model":instaOf(c.model),
     fotograf:p.name,"fotograf adresse":p.adresse,"fotograf telefon":p.telefon,unternehmen:p.unternehmen||"",webseite:p.webseite||"",instagram:instaOf(p),
     termin:(c.roles&&c.roles.ev)||settings.eventWord||"Shooting"};
   Object.entries(c.fields||{}).forEach(([k,v])=>{ map[k.trim().toLowerCase()]=v; });
@@ -2315,6 +2326,7 @@ function startDraft(tplId){
   $("#formTplName").textContent=t.title+(t.subtitle?", "+t.subtitle:"");
   $("#formLegal").hidden=!t.builtin;
   ["m_name","m_adresse","m_telefon","m_geburtsdatum","s_ort","g_name"].forEach(id=>$("#"+id).value="");
+  setSoc($("#socRows"),[]); setExtra($("#extraRows"),[]); fillExtraKeys();
   $("#s_datum").value=draft.shoot.datum;
   $("#minorBox").hidden=true;
   $("#knownBox").hidden=true; knownMatch=null; futureAck=false; refreshKnownNames();
@@ -2413,6 +2425,8 @@ $("#modalCancel").onclick=()=>{ $("#modal").hidden=true; draft=null; show("home"
 $("#knownTake").onclick=()=>{
   if(!knownMatch) return;
   ["adresse","telefon","geburtsdatum"].forEach(k=>{ if(knownMatch.model[k] && !$("#m_"+k).value.trim()) $("#m_"+k).value=knownMatch.model[k]; });
+  if(!getSoc($("#socRows")).length && socOf(knownMatch.model).length) setSoc($("#socRows"),socOf(knownMatch.model));
+  if(!getExtra($("#extraRows")).length && (knownMatch.model.extra||[]).length) setExtra($("#extraRows"),knownMatch.model.extra);
   if(normName($("#m_name").value)===normName(knownMatch.model.name)) $("#m_name").value=knownMatch.model.name;
   $("#knownBox").hidden=true; updateMinor(); toast("Daten übernommen. Bitte kurz prüfen, ob noch alles stimmt.");
 };
@@ -2443,7 +2457,7 @@ function computeGroup(d){
   if(!(gl && d.fields && d.fields[gl])){ delete d.group; return; }
   const people={...((d.group&&d.group.people)||{})};
   (d.participants||[]).forEach(p=>{ const k=normName(p.name); people[k]={...(people[k]||{}),...Object.fromEntries(Object.entries(p).filter(([,v])=>v))}; });
-  people[normName(d.model.name)]={name:d.model.name,adresse:d.model.adresse,telefon:d.model.telefon,geburtsdatum:d.model.geburtsdatum};
+  people[normName(d.model.name)]={name:d.model.name,adresse:d.model.adresse,telefon:d.model.telefon,geburtsdatum:d.model.geburtsdatum,instagram:((socOf(d.model).find(x=>x.p==="Instagram")||{}).h)||""};
   const pool=uniqNames((d.group?d.group.pool:[]).concat(splitNames(d.fields[gl]),[d.model.name]));
   const done=uniqNames((d.group?d.group.done:[]).concat([d.model.name]));
   d.group={label:gl,pool,done,people,gid:(d.group&&d.group.gid)||("g"+Date.now())};
@@ -2469,6 +2483,7 @@ function startGroupNext(prev,wanted){
   $("#m_name").value=next;
   const np=(draft.group.people||{})[normName(next)]||{};
   ["adresse","telefon","geburtsdatum"].forEach(k=>{ if(np[k]) $("#m_"+k).value=np[k]; });
+  setSoc($("#socRows"),np.instagram?[{p:"Instagram",h:np.instagram}]:[]); setExtra($("#extraRows"),[]);
   updateMinor(); groupUpdateOthers();
   $("#formTplName").textContent=`${prev.tpl.title} · Gruppe: ${groupPool(prev).join(", ")}`;
   if(next) setTimeout(checkKnown,50);
@@ -2476,7 +2491,7 @@ function startGroupNext(prev,wanted){
 $("#m_name").addEventListener("change",groupUpdateOthers);
 $("#m_name").addEventListener("blur",groupUpdateOthers);
 
-const P_FIELDS=["name","adresse","telefon","geburtsdatum"];
+const P_FIELDS=["name","adresse","telefon","geburtsdatum","instagram"];
 function renumber(l){ [...l.querySelectorAll(".pcard")].forEach((c,i)=>c.querySelector(".pc-n").textContent="Model "+(i+2)); }
 function multiAdd(l,val){
   const p=typeof val==="object"&&val?val:{name:val||""};
@@ -2485,7 +2500,8 @@ function multiAdd(l,val){
     <input data-p="name" list="knownNames" placeholder="Vor- und Nachname" autocomplete="off">
     <input data-p="adresse" placeholder="Adresse (freiwillig)">
     <div class="inrow"><input data-p="telefon" type="tel" placeholder="Telefon (freiwillig)">${NATIVE&&NATIVE.pickContact?'<button type="button" class="btn ghost pick">Aus Kontakten</button>':""}</div>
-    <label class="pc-l">Geburtsdatum (freiwillig)<input data-p="geburtsdatum" type="date"></label>`;
+    <label class="pc-l">Geburtsdatum (freiwillig)<input data-p="geburtsdatum" type="date"></label>
+    <input data-p="instagram" placeholder="Instagram (freiwillig)" autocapitalize="off">`;
   P_FIELDS.forEach(k=>{ row.querySelector(`[data-p="${k}"]`).value=p[k]||""; });
   row.querySelectorAll("input").forEach(i=>i.addEventListener("input",()=>l.classList.remove("err")));
   // bekannte Person aus dem Archiv: leere Felder ergänzen
@@ -2515,7 +2531,7 @@ function fieldValue(l){
   return l.querySelector("input").value.trim();
 }
 function readForm(){
-  draft.model={name:$("#m_name").value.trim(),adresse:$("#m_adresse").value.trim(),telefon:$("#m_telefon").value.trim(),geburtsdatum:$("#m_geburtsdatum").value};
+  draft.model={name:$("#m_name").value.trim(),adresse:$("#m_adresse").value.trim(),telefon:$("#m_telefon").value.trim(),geburtsdatum:$("#m_geburtsdatum").value,social:getSoc($("#socRows")),extra:getExtra($("#extraRows"))};
   draft.shoot={datum:$("#s_datum").value,ort:$("#s_ort").value.trim()};
   draft.guardian={name:$("#g_name").value.trim()};
   draft.choices={};
@@ -2572,10 +2588,10 @@ function contractHTML(c, withSigs){
   const R=rolesFor(c), NH=noHead(c.tpl.body);
   let h=(withSigs&&c.demo?`<span class="demo-flag">Demo-Version</span>`:"")+(settings.logo&&!c.received?`<img class="logo-top" src="${settings.logo}" alt="">`:"")+`<h3>${esc(c.tpl.heading)}</h3>`+(NH?"":`<p>Zwischen:</p>
   <div class="party"><span class="t">1. ${esc(R.p)}</span>
-    <span>Name:</span><span>${esc(p.name)}${instaOf(p)?" · "+esc(instaOf(p)):""}</span>${p.unternehmen?`<span>Unternehmen:</span><span>${esc(p.unternehmen)}</span>`:""}<span>Adresse:</span><span>${esc(p.adresse)}</span><span>Telefon:</span><span>${esc(p.telefon)}</span>${p.webseite?`<span>Webseite:</span><span>${esc(p.webseite)}</span>`:""}
+    <span>Name:</span><span>${esc(p.name)}</span>${socLines(p).map(([k,v])=>`<span>${esc(k)}</span><span>${esc(v)}</span>`).join("")}${p.unternehmen?`<span>Unternehmen:</span><span>${esc(p.unternehmen)}</span>`:""}<span>Adresse:</span><span>${esc(p.adresse)}</span><span>Telefon:</span><span>${esc(p.telefon)}</span>${p.webseite?`<span>Webseite:</span><span>${esc(p.webseite)}</span>`:""}
   <span class="t">2. ${esc(R.m)}</span>
-    <span>Name:</span><span>${f(c.model.name)}</span><span>Adresse:</span><span>${f(c.model.adresse)}</span>
-    <span>Telefon:</span><span>${f(c.model.telefon)}</span>${noBirth(c.tpl.body)?"":`<span>Geburtsdatum:</span><span>${f(deDate(c.model.geburtsdatum))}</span>`}
+    <span>Name:</span><span>${f(c.model.name)}</span>${socLines(c.model).map(([k,v])=>`<span>${esc(k)}</span><span>${f(v)}</span>`).join("")}<span>Adresse:</span><span>${f(c.model.adresse)}</span>
+    <span>Telefon:</span><span>${f(c.model.telefon)}</span>${noBirth(c.tpl.body)?"":`<span>Geburtsdatum:</span><span>${f(deDate(c.model.geburtsdatum))}</span>`}${extraLines(c.model).map(([k,v])=>`<span>${esc(k)}</span><span>${f(v)}</span>`).join("")}
     ${c.minor?`<span>Erziehungsber.:</span><span>${f(c.guardian.name)}</span>`:""}
   <span class="t">${esc(R.ev)}</span>
     <span>Datum:</span><span>${f(deDate(c.shoot.datum))}</span><span>Ort:</span><span>${f(c.shoot.ort)}</span></div>`);
@@ -2865,6 +2881,41 @@ $("#recvOk").onclick=()=>{
 };
 window.onIncoming=()=>{ if(!(NATIVE&&NATIVE.takeIncoming)) return;
   if(!$("#lock").hidden){ const prev=lockOk; lockOk=()=>{ if(prev) prev(); window.onIncoming(); }; return; } try{ const r=JSON.parse(NATIVE.takeIncoming()||"null"); if(r&&r.b64) handleIncoming(r.b64,r.name); }catch(e){} };
+
+/* ---------- Social Media und weitere Angaben ---------- */
+const SOC_PL=["Instagram","TikTok","Facebook","YouTube","Model-Kartei","Webseite","Andere"];
+const socAt=(p,h)=>{ h=String(h||"").trim().replace(/^@/,""); return /^(Instagram|TikTok|YouTube)$/.test(p)&&h&&!/(\/|^www\.|^https?:)/i.test(h)?"@"+h:h; };
+function addSocRow(cont,item){
+  const it=item||{p:"Instagram",h:""}; const row=document.createElement("div"); row.className="xrow";
+  row.innerHTML=`<select aria-label="Plattform">${SOC_PL.map(p=>`<option ${p===it.p?"selected":""}>${p}</option>`).join("")}</select><input aria-label="Name oder Link" placeholder="Name oder Link" autocapitalize="off" value="${esc(it.h||"")}"><button type="button" class="mdel" aria-label="Entfernen">×</button>`;
+  row.querySelector(".mdel").onclick=()=>{ row.remove(); if(!cont.children.length) addSocRow(cont); };
+  cont.appendChild(row);
+}
+function addExtraRow(cont,item){
+  const it=item||{k:"",v:""}; const row=document.createElement("div"); row.className="xrow";
+  row.innerHTML=`<input aria-label="Bezeichnung" placeholder="Bezeichnung, z. B. Künstlername" list="extraKeys" value="${esc(it.k||"")}"><input aria-label="Angabe" placeholder="Angabe" value="${esc(it.v||"")}"><button type="button" class="mdel" aria-label="Entfernen">×</button>`;
+  row.querySelector(".mdel").onclick=()=>row.remove();
+  cont.appendChild(row);
+}
+function setSoc(cont,list){ cont.innerHTML=""; (list&&list.length?list:[null]).forEach(x=>addSocRow(cont,x)); }
+function getSoc(cont){ return [...cont.querySelectorAll(".xrow")].map(r=>({p:r.querySelector("select").value,h:r.querySelector("input").value.trim().replace(/^@/,"")})).filter(x=>x.h); }
+function setExtra(cont,list){ cont.innerHTML=""; (list||[]).forEach(x=>addExtraRow(cont,x)); }
+function getExtra(cont){ return [...cont.querySelectorAll(".xrow")].map(r=>{ const i=r.querySelectorAll("input"); return {k:i[0].value.trim().replace(/:$/,""),v:i[1].value.trim()}; }).filter(x=>x.k&&x.v); }
+function socOf(person){
+  if(!person) return [];
+  if(Array.isArray(person.social)&&person.social.length) return person.social.filter(x=>x&&x.h);
+  return person.instagram?[{p:"Instagram",h:person.instagram}]:[];
+}
+const socLines=person=>socOf(person).map(x=>[x.p+":",socAt(x.p,x.h)]);
+const extraLines=person=>((person&&person.extra)||[]).filter(x=>x.k&&x.v).map(x=>[x.k+":",x.v]);
+function fillExtraKeys(){
+  const keys=new Set(["Künstlername","E-Mail","Agentur","Kleidergröße","Schuhgröße"]);
+  contracts.forEach(c=>((c.model&&c.model.extra)||[]).forEach(x=>x.k&&keys.add(x.k)));
+  $("#extraKeys").innerHTML=[...keys].map(k=>`<option value="${esc(k)}">`).join("");
+}
+$("#socAdd").onclick=()=>{ addSocRow($("#socRows")); $("#socRows").lastElementChild.querySelector("input").focus(); };
+$("#extraAdd").onclick=()=>{ fillExtraKeys(); addExtraRow($("#extraRows")); $("#extraRows").lastElementChild.querySelector("input").focus(); };
+$("#pSocAdd").onclick=()=>{ addSocRow($("#pSocRows")); $("#pSocRows").lastElementChild.querySelector("input").focus(); };
 
 /* ---------- Location-Freigaben (Property Release) verknüpfen ---------- */
 const isPropertyDoc=c=>c&&!c.received&&(c.tplId==="m-property"||(noBirth(c.tpl.body)&&/eigentüm/i.test(rolesFor(c).m)));
@@ -3169,9 +3220,10 @@ function buildPdf(c, demo, share){
   if(!noHead(c.tpl.body)){
     text("Zwischen:",{gap:1});
     text("1. "+R.p,{bold:true,gap:.5});
-    row("Name:",p.name+(instaOf(p)?" · "+instaOf(p):"")); if(p.unternehmen) row("Unternehmen:",p.unternehmen); row("Adresse:",p.adresse); row("Telefon:",p.telefon); if(p.webseite) row("Webseite:",p.webseite); y+=2;
+    row("Name:",p.name); socLines(p).forEach(([k,v])=>row(k,v)); if(p.unternehmen) row("Unternehmen:",p.unternehmen); row("Adresse:",p.adresse); row("Telefon:",p.telefon); if(p.webseite) row("Webseite:",p.webseite); y+=2;
     text("2. "+R.m,{bold:true,gap:.5});
-    row("Name:",c.model.name); row("Adresse:",c.model.adresse); row("Telefon:",c.model.telefon); if(!noBirth(c.tpl.body)) row("Geburtsdatum:",deDate(c.model.geburtsdatum));
+    row("Name:",c.model.name); socLines(c.model).forEach(([k,v])=>row(k,v)); row("Adresse:",c.model.adresse); row("Telefon:",c.model.telefon); if(!noBirth(c.tpl.body)) row("Geburtsdatum:",deDate(c.model.geburtsdatum));
+    extraLines(c.model).forEach(([k,v])=>row(k,v));
     if(c.minor) row("Erziehungsber.:",c.guardian.name);
     y+=2; row("Datum "+R.ev+":",deDate(c.shoot.datum)); row("Ort "+R.ev+":",c.shoot.ort); y+=3;
   }
@@ -3277,7 +3329,7 @@ function renderSettings(){
   $("#devId").textContent=APP.deviceId?fmtDevice(APP.deviceId):"nur in der App";
   renderLicRequest();
   renderHiddenBuiltins();
-  renderLogo(); $("#p_insta").value=(settings.photographer.instagram||"");
+  renderLogo(); setSoc($("#pSocRows"),socOf(settings.photographer));
   renderLockSettings();
   $("#remOn").checked=remOn;
   if(setupNeeded()){ openCardOf("#roleMe"); openCardOf("#p_name"); openCardOf("#shareApp"); }
@@ -3298,7 +3350,8 @@ $("#saveSettings").onclick=()=>{
   settings.roleOther=roleValue("#roleOther","#roleOtherOwn")||"Model";
   settings.eventWord=$("#eventWord").value||"Shooting";
   settings.shareMsg=$("#shareMsg").value.trim()||DEFAULT_MSG;
-  settings.photographer.instagram=$("#p_insta").value.trim().replace(/^@/,"");
+  settings.photographer.social=getSoc($("#pSocRows"));
+  settings.photographer.instagram=((settings.photographer.social.find(x=>x.p==="Instagram")||{}).h)||"";
   settings.shareAppLabel=app==="chooser"?"":$("#shareApp").selectedOptions[0].textContent.replace(/ \(nicht gefunden\)$/,"");
   saveSettingsDoc(); toast("Einstellungen gespeichert."); show("home");
 };
@@ -3503,7 +3556,7 @@ function pdfLogo(doc){
   try{ const pr=doc.getImageProperties(settings.logo); const h=16, w=Math.min(60,h*pr.width/pr.height);
     doc.addImage(settings.logo,"PNG",190-w,10,w,h); return 10; }catch(e){ return 0; }
 }
-const instaOf=p=>{ const i=String((p&&p.instagram)||"").replace(/^@/,"").trim(); return i?"@"+i:""; };
+const instaOf=p=>{ const s=(p&&Array.isArray(p.social))?p.social.find(x=>x.p==="Instagram"&&x.h):null; const i=String((s&&s.h)||(p&&p.instagram)||"").replace(/^@/,"").trim(); return i?"@"+i:""; };
 
 /* ---------- Über die App ---------- */
 $("#devName").textContent=CONFIG.DEV_NAME||"";
@@ -3626,12 +3679,139 @@ $("#openIntro").onclick=openIntro;
     if(dx<-50&&introIdx<SLIDES.length-1){ introIdx++; renderIntro(); } else if(dx>50&&introIdx>0){ introIdx--; renderIntro(); } }); }
 if(!KV.get("introSeen",false) && !Store.list().length) openIntro();
 
+/* ---------- Vorlage aus PDF erstellen ---------- */
+// Wandelt Textstücke (str, x, y, w, h, page) in Zeilen und daraus in einen Vorlagen-Vorschlag
+function pdfItemsToLines(items){
+  const pages={}; items.forEach(it=>{ if(!String(it.str).trim()&&!it.str) return; (pages[it.page]=pages[it.page]||[]).push(it); });
+  const lines=[];
+  Object.keys(pages).sort((a,b)=>a-b).forEach(pg=>{
+    const its=pages[pg].sort((a,b)=>b.y-a.y||a.x-b.x); const rows=[];
+    its.forEach(it=>{ const tol=Math.max(2,(it.h||10)*0.45); let r=rows.find(r=>Math.abs(r.y-it.y)<=tol); if(!r){ r={y:it.y,h:it.h||10,items:[]}; rows.push(r); } r.items.push(it); });
+    rows.sort((a,b)=>b.y-a.y).forEach(r=>{
+      r.items.sort((a,b)=>a.x-b.x); let t="", end=null;
+      r.items.forEach(it=>{ const s=String(it.str); if(end!==null){ const gap=it.x-end; if(gap>(it.h||10)*0.08 && !/\s$/.test(t) && !/^\s/.test(s)) t+=" "; } t+=s; end=it.x+(it.w||0); });
+      t=t.replace(/\s+/g," ").trim(); if(t) lines.push({t,y:r.y,h:r.h,page:+pg});
+    });
+  });
+  return lines;
+}
+function linesToParagraphs(lines){
+  const gaps=[]; for(let i=1;i<lines.length;i++) if(lines[i].page===lines[i-1].page){ const g=lines[i-1].y-lines[i].y; if(g>0) gaps.push(g); }
+  gaps.sort((a,b)=>a-b); const med=gaps.length?gaps[Math.floor(gaps.length/2)]:14;
+  const starts=/^(§\s*\d|[☐□▢❏☒☑✓✔✗✘⊠•\-–]\s|\[[ xX]?\]|[a-z]\)\s)/;
+  const numStart=/^\d{1,2}(\.\d+)*\.?\s+[A-ZÄÖÜ]/;
+  const headLine=t=>/^(§\s*\d+[a-z]?\b|\d{1,2}\.(\d+\.)*)\s*[A-ZÄÖÜ§]/.test(t) && t.length<80 && !/[.,;]$/.test(t);
+  const paras=[]; let cur=null, lastHead=false;
+  lines.forEach((l,i)=>{
+    const prev=lines[i-1];
+    const brk=!cur || l.page!==prev.page && false || (prev && l.page===prev.page && prev.y-l.y>med*1.45) || starts.test(l.t) || (numStart.test(l.t) && /[.:;!?]$/.test(cur&&cur.t||"")) || /[:]$/.test(cur&&cur.t||"") || /_{3,}|\.{5,}/.test(l.t) || /_{3,}|\.{5,}/.test(cur&&cur.t||"") || (l.h>(cur?cur.h:l.h)*1.15);
+    const hl=headLine(l.t);
+    if(brk||hl||lastHead){ cur={t:l.t,h:l.h}; paras.push(cur); }
+    else { cur.t = /[A-Za-zÄÖÜäöüß]-$/.test(cur.t)&&/^[a-zäöüß]/.test(l.t) ? cur.t.slice(0,-1)+l.t : cur.t+" "+l.t; }
+    lastHead=hl;
+  });
+  return paras;
+}
+const PDF_KNOWN=/^(vor-?\s*(und|&)\s*nachname|name|vorname|nachname|familienname|straße|strasse|str\.|hausnummer|adresse|anschrift|privatadresse|plz|postleitzahl|ort|wohnort|plz\s*\/?\s*ort|telefon|tel\.?|handy|mobil|telefonnummer|geburtsdatum|geb\.?\s*datum|geboren am|datum|ort,?\s*datum|unterschrift.*)$/i;
+function paragraphsToTemplate(paras){
+  const stats={h:0,f:0,c:0};
+  let ps=paras.map(p=>p.t.replace(/\s*\bSeite\s+\d+\s*(von|\/)\s*\d+\b\s*/gi," ").trim()).filter(t=>t && !/^(seite\s*)?\d+\s*(\/|von)\s*\d+$/i.test(t) && !/^[\s._…\-–]+$/.test(t));
+  // Titel: Zeilen vor der ersten Überschrift
+  const isHead=t=>/^(§\s*\d+[a-z]?\b|\d{1,2}\.(\d+\.)*)\s*\S/.test(t) && t.length<95 && !/[.;,]$/.test(t);
+  let title="";
+  const fh=ps.findIndex(isHead);
+  if(fh>0){ const pre=ps.slice(0,fh).filter(t=>!/_{3,}|\.{5,}/.test(t)&&t.length<160); if(pre.length) title=(pre.length>1 && /\b(zwischen|für|über|und|der|des|mit)$/i.test(pre[0].trim()) && (pre[0]+pre[1]).length<170 ? pre[0]+" "+pre[1] : pre[0]).replace(/\s+/g," "); ps=ps.filter((t,i)=>!(i<fh && pre.includes(t))); }
+  // Block mit den Vertragsparteien entfernen (steht im Kopf der App)
+  const mk=ps.map((t,i)=>/nachfolgend\s*[„"»“]?\s*(der\s+|die\s+)?(fotograf|model|darsteller|auftrag)/i.test(t)?i:-1).filter(i=>i>=0);
+  if(mk.length){ const last=mk[mk.length-1]; let st=ps.findIndex(t=>/partei|zwischen/i.test(t)); if(st<0||st>last) st=0; ps.splice(st,last-st+1); }
+  const out=[]; let fieldN=0; const used=new Set();
+  const addField=label=>{ label=label.replace(/[\[\]{}=|]/g,"").replace(/\s+/g," ").trim().replace(/[:\s]+$/,""); let l=label, k=2; while(used.has(l.toLowerCase())) l=label+" "+(k++); used.add(l.toLowerCase()); stats.f++; return l; };
+  ps.forEach(t=>{
+    if(/^unterschrift/i.test(t) || /^(ort|datum)\s*[,/]?\s*(den\s*)?[._…\s]*$/i.test(t) || /^[^.]{0,40},\s*den\b[\s._…]*$/i.test(t)) return;
+    if(/unterschrift/i.test(t) && /_{3,}|\.{4,}|(?:\.\s){3,}/.test(t)) return;
+    t=t.replace(/\bam\s+\./g,"am {Datum}.").replace(/\bam\s*,/g,"am {Datum},");
+    if(/(unterschrift|erziehungsberechtigt)/i.test(t) && t.length<160 && !/[a-zäöü]{4,}\s+[a-zäöü]{4,}\s+[a-zäöü]{4,}.*\./i.test(t)) return;
+    let m;
+    if(m=t.match(/^[☐□▢❏⬜]\s*(.+)/)){ out.push("[ ] "+m[1]); stats.c++; return; }
+    if(m=t.match(/^[☒☑✓✔✗✘⊠]\s*(.+)/)){ out.push("[x] "+m[1]); stats.c++; return; }
+    if(m=t.match(/^\[\s?\]\s*(.+)/)){ out.push("[ ] "+m[1]); stats.c++; return; }
+    if(m=t.match(/^\[[xX]\]\s*(.+)/)){ out.push("[x] "+m[1]); stats.c++; return; }
+    if(isHead(t)){ out.push("","# "+t); stats.h++; return; }
+    const blank=/_{3,}|\.{4,}|…{2,}|(?:\.\s){3,}\./;
+    if(blank.test(t)){
+      const parts=t.split(blank); const label=parts[0].replace(/[:\s]+$/,"").trim(); const rest=parts.slice(1).join("").trim();
+      if(!rest && label.length<=45){
+        if(!label || PDF_KNOWN.test(label)) return;
+        if(/e-?mail/i.test(label)){ const l=addField("E-Mail"); out.push(`[Feld: ${l}]`,`E-Mail: {${l}}`); return; }
+        const l=addField(label); out.push(`[Feld: ${l}]`,`${l}: {${l}}`); return;
+      }
+      // Lücke mitten im Satz
+      let txt=t.replace(new RegExp("\\s*(?:"+blank.source+")\\s*","g"),"\u0000"), pre=[];
+      txt=txt.split("\u0000").reduce((acc,seg,i,arr)=>{ if(i===0) return seg; const before=acc.slice(-25);
+        let ph;
+        if(/\bam\s*$/i.test(before)) ph="{Datum}";
+        else if(/\b(in|ort)\s*$/i.test(before)) ph="{Ort}";
+        else { const l=addField("Angabe "+(++fieldN)); pre.push(`[Feld: ${l}]`); ph=`{${l}}`; }
+        return acc.replace(/\s*$/," ")+ph+(seg?" "+seg.replace(/^\s+/,""):""); },"");
+      out.push(...pre, txt.replace(/\s+([.,;:])/g,"$1"));
+      return;
+    }
+    out.push(t);
+  });
+  let body=out.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+  if(!/\[Zusatz\]/i.test(body)) body+="\n\n[Zusatz]";
+  const heading=title||"";
+  let short=(title||"Vorlage aus PDF").replace(/\(.*?\)/g,"").replace(/\s+zwischen\b.*$/i,"").trim();
+  if(short.length>48) short=short.slice(0,48).replace(/\s+\S*$/,"");
+  return {title:short||"Vorlage aus PDF",heading,body,stats};
+}
+
+function loadPdfJs(){
+  return new Promise((res,rej)=>{
+    if(window.pdfjsLib) return res(window.pdfjsLib);
+    const sc=document.createElement("script"); sc.src="pdf.min.js";
+    sc.onload=()=>{ if(window.pdfjsLib){ window.pdfjsLib.GlobalWorkerOptions.workerSrc="pdf.worker.min.js"; res(window.pdfjsLib); } else rej(new Error("PDF-Leser fehlt")); };
+    sc.onerror=()=>rej(new Error("PDF-Leser fehlt")); document.head.appendChild(sc);
+  });
+}
+async function pdfFileToItems(file){
+  const lib=await loadPdfJs();
+  const data=new Uint8Array(await file.arrayBuffer());
+  const doc=await lib.getDocument({data}).promise; const items=[];
+  for(let n=1;n<=Math.min(doc.numPages,20);n++){
+    const page=await doc.getPage(n); const tc=await page.getTextContent();
+    tc.items.forEach(it=>{ if(!("str" in it)) return; const tr=it.transform||[1,0,0,1,0,0]; const h=Math.hypot(tr[2],tr[3])||it.height||10;
+      items.push({str:it.str,x:tr[4],y:tr[5],w:it.width||0,h,page:n}); });
+  }
+  return items;
+}
+$("#tplFromPdf").onclick=()=>$("#tplPdfFile").click();
+$("#tplPdfFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  if($("#t_body").value.trim() && !confirm("Der bisherige Vertragstext wird durch den Vorschlag aus der PDF ersetzt. Weiter?")) return;
+  toast("PDF wird gelesen …");
+  try{
+    const items=await pdfFileToItems(f);
+    const chars=items.reduce((n,it)=>n+String(it.str).trim().length,0);
+    if(chars<40){ toast("In dieser PDF wurde kein Text gefunden – vermutlich ein Scan oder Foto. Diese lassen sich leider nicht einlesen."); return; }
+    const r=paragraphsToTemplate(linesToParagraphs(pdfItemsToLines(items)));
+    if(!$("#t_title").value.trim()) $("#t_title").value=r.title;
+    if(!$("#t_heading").value.trim()) $("#t_heading").value=r.heading||r.title;
+    $("#t_body").value=r.body;
+    openEdFull();
+    const st=[r.stats.h&&`${r.stats.h} Überschriften`,r.stats.f&&`${r.stats.f} Felder`,r.stats.c&&`${r.stats.c} Auswahlen`].filter(Boolean).join(", ");
+    $("#edTip").textContent=`Vorschlag aus der PDF${st?": "+st+" erkannt":""}. Bitte einmal durchlesen und korrigieren – deine eigenen Daten und die des Gegenübers setzt die App automatisch in den Kopf.`;
+  }catch(err){
+    toast(err&&err.message==="PDF-Leser fehlt"?"Der PDF-Leser ist in dieser Version nicht verfügbar.":"Die PDF konnte nicht gelesen werden.");
+  }
+};
+
 /* ---------- Vorlagen-Editor im Vollbild ---------- */
 function edGroups(){
   const R=rolesOf($("#edTa").value||""), m=R.m, pr=R.p, ev=R.ev;
   return [
     {h:"Bausteine",blk:true,items:[["Überschrift","\n# 1. Überschrift\n"],["Auswahl","@choice"],["Feld","@field"],["Zusatzvereinbarungen","\n[Zusatz]\n"],["Nur ab 18","@ab18"]]},
-    {h:m,items:[["Name","{Name}","z. B. Mia Hoffmann"],["Vorname","{Vorname}","z. B. Mia"],["Adresse","{Adresse}"],["Telefon","{Telefon}"],["Geburtsdatum","{Geburtsdatum}"]]},
+    {h:m,items:[["Name","{Name}","z. B. Mia Hoffmann"],["Vorname","{Vorname}","z. B. Mia"],["Instagram","{Instagram Model}","z. B. @mia.hoffmann"],["Adresse","{Adresse}"],["Telefon","{Telefon}"],["Geburtsdatum","{Geburtsdatum}"]]},
     {h:pr+" (du)",items:[["Name","{Fotograf}","dein Name"],["Unternehmen","{Unternehmen}"],["Adresse","{Fotograf Adresse}","deine Adresse"],["Telefon","{Fotograf Telefon}","deine Nummer"],["Webseite","{Webseite}"],["Instagram","{Instagram}"]]},
     {h:ev,items:[["Datum","{Datum}","Datum "+R.evGen],["Ort","{Ort}","Ort "+R.evGen],[ev+" / Dreh …","{Termin}","das Wort für den Termin, z. B. "+ev]]}
   ];
@@ -3686,7 +3866,14 @@ $("#edTa").addEventListener("input",()=>{ clearTimeout(renderEdBar._t); renderEd
 
 /* ---------- „Was ist neu?“ nach Updates ---------- */
 const CHANGELOG=[
-  {id:"2026-10-c",title:"Oktober 2026",items:[
+  {id:"2026-10-d",title:"Neu in diesem Update",withPrev:true,items:[
+    ["📱","Social Media im Vertrag",
+     "Beim Ausfüllen kannst du für dein Gegenüber jetzt freiwillig Social-Media-Namen angeben – Instagram, TikTok, Facebook, YouTube, Model-Kartei, Webseite oder eine andere Plattform, auch mehrere. Sie stehen im Vertrag als eigene Zeile unter dem Namen. Deine eigenen trägst du unter Einstellungen → Meine Daten ein; dort ersetzen sie das bisherige Instagram-Feld."],
+    ["📝","Weitere Angaben",
+     "Mit „+ Weitere Angabe hinzufügen“ ergänzt du beliebige Angaben zum Gegenüber, z. B. Künstlername, E-Mail oder Agentur. Sie erscheinen sauber im Kopf des Vertrags. Bezeichnungen, die du schon einmal benutzt hast, schlägt die App vor."],
+    ["📄","Vorlage aus PDF erstellen",
+     "Im Vorlagen-Editor gibt es den Knopf „Aus PDF erstellen“. Die App liest einen vorhandenen Vertrag ein und macht daraus einen Vorschlag mit Überschriften, Auswahlen, Feldern und Platzhaltern, den du im Editor prüfst. Eine Anleitung findest du unter Hilfe & Anleitungen."]]},
+  {id:"2026-10-c",title:"Vom letzten Update",items:[
     ["✍️","Vorlagen-Editor mit Platzhalter-Knöpfen",
      "Tippe in einer eigenen Vorlage auf den Vertragstext – er öffnet sich im Vollbild. Oben findest du Knöpfe für Bausteine (Überschrift, Auswahl, Feld, Zusatzvereinbarungen, Nur ab 18) und für Platzhalter, sortiert nach Model, dir als Fotograf/in und dem Shooting. Ein Tipp setzt den Baustein oder Platzhalter an die Stelle, an der der Cursor steht. Selbst angelegte Felder erscheinen sofort als eigener Knopf unter „Deine Felder“."],
     ["🏢","Unternehmen und Webseite im Vertrag",
@@ -3699,7 +3886,7 @@ const CHANGELOG=[
      "Unter Einstellungen → Hilfe & Anleitungen findest du Schritt-für-Schritt-Anleitungen zum Durchwischen: Vertrag zur Unterschrift senden, erhaltenen Vertrag unterschreiben, Gruppenshooting, Nachtrag, Property Release sowie Sicherung, Sync und App-Sperre. Außerdem erklärt dir die App beim ersten Mal kurz, wie das Senden zur Unterschrift und das Unterschreiben eines erhaltenen Vertrags funktioniert."],
     ["✅","„unterschrieben & zurückgeschickt“",
      "Wenn du einen Vertrag, den du von jemandem bekommen hast, unterschrieben und zurückgeschickt hast, steht das jetzt im Archiv. So siehst du sofort, dass für dich alles erledigt ist."]]},
-  {id:"2026-10-b",title:"Vorheriges Update",items:[
+  {id:"2026-10-b",title:"Davor",items:[
     ["🔄","Verträge austauschen und zurückschicken",
      "Nutzt dein Gegenüber auch Model Release, übernimmt es den Vertrag mit einem Tipp in seine App (Android: PDF antippen → „Mit Model Release öffnen“, iPhone: PDF speichern und bei „+ Hinzufügen“ auswählen). Schickst du einen Vertrag zum Unterschreiben, kann er dort unterschrieben und zurückgeschickt werden – die Unterschrift wird dann in deinen Vertrag übernommen. Ein Prüfcode erkennt veränderte Verträge."],
     ["🔒","App-Sperre",
@@ -3719,8 +3906,8 @@ function renderNews(all){
     $("#newsBody").innerHTML=CHANGELOG.map(v=>`<div class="news-v"><h4>${esc(v.title)}</h4>${v.items.map(([ic,t,d])=>`<div class="news-d"><b><i aria-hidden="true">${ic}</i> ${esc(t)}</b><p>${esc(d)}</p></div>`).join("")}</div>`).join("");
     $("#newsMore").hidden=true;
   } else {
-    const v=CHANGELOG[0];
-    $("#newsBody").innerHTML=`<div class="news-v"><ul>${v.items.map(([ic,t])=>`<li><i aria-hidden="true">${ic}</i><span>${esc(t)}</span></li>`).join("")}</ul></div><p class="hint" style="margin:0">Ausführlich erklärt unter Einstellungen → App → „Was ist neu?“</p>`;
+    const vs=CHANGELOG[0].withPrev?CHANGELOG.slice(0,2):CHANGELOG.slice(0,1);
+    $("#newsBody").innerHTML=vs.map((v,i)=>`<div class="news-v">${vs.length>1?`<h4>${esc(v.title)}</h4>`:""}<ul>${v.items.map(([ic,t])=>`<li><i aria-hidden="true">${ic}</i><span>${esc(t)}</span></li>`).join("")}</ul></div>`).join("")+`<p class="hint" style="margin:0">Ausführlich erklärt unter Einstellungen → App → „Was ist neu?“</p>`;
     $("#newsMore").hidden=false;
   }
   $("#news").hidden=false; $("#news .news-box").scrollTop=0;
@@ -3762,6 +3949,12 @@ const GUIDES={
     {art:"🏠",h:"Location-Freigabe",p:"Für Aufnahmen in Privaträumen, Cafés, Ferienwohnungen oder von Gegenständen gibt es das Muster „Property Release“. Das Gegenüber heißt dort „Eigentümer/in“."},
     {art:"➕",h:"Weiteres Dokument zum Shooting",p:"Nach jedem Vertrag kannst du direkt das nächste Dokument fürs selbe Shooting anlegen – Datum und Ort sind schon eingetragen:",btn:"Weiteres Dokument anlegen"},
     {art:"🔗",h:"Freigabe zuerst?",p:"Hast du die Location-Freigabe schon vorher gemacht, fragt die App beim Model-Vertrag: „Gibt es eine Location-Freigabe für dieses Shooting?“ – auswählen, und beide sind unter „Zu diesem Shooting“ verknüpft."}]},
+  pdftpl:{t:"Vorlage aus PDF erstellen",ic:"📄",s:[
+    {art:"📄",h:"Eigenen Vertrag übernehmen",p:"Du hast schon einen Vertrag als PDF? Die App liest ihn ein und baut daraus einen Vorschlag für eine eigene Vorlage."},
+    {art:"➕",h:"1. Neue Vorlage anlegen",p:"Auf der Startseite tippst du auf „Eigene Vorlage anlegen“ und dann auf:",btn:"Aus PDF erstellen"},
+    {art:"🔍",h:"2. Was die App erkennt",p:"Aus der PDF macht sie automatisch:",li:["Paragrafen wie „§ 3 …“ oder „4. …“ → Überschriften","Ankreuzfelder ☐ / ☒ → Auswahl zum Ankreuzen","Lücken wie „Anzahl Bilder: ____“ → Felder, die beim Ausfüllen abgefragt werden","„am ____“ → Datum, „in ____“ → Ort","Namen, Adressen, Telefon und Unterschriftszeilen → fliegen raus, die setzt die App selbst in den Kopf"]},
+    {art:"✍️",h:"3. Prüfen und speichern",p:"Der Vorschlag öffnet sich im großen Editor. Lies ihn einmal durch, korrigiere mit den Knöpfen und tipp auf „Fertig“ und „Vorlage speichern“."},
+    {art:"⚠️",h:"Gut zu wissen",p:"Das funktioniert mit PDFs, die am Computer erstellt wurden (z. B. aus Word). Gescannte oder abfotografierte Verträge enthalten keinen lesbaren Text – die kann die App nicht einlesen.",li:["Übernimm nur Verträge, die du selbst verwenden darfst.","Die App prüft den Inhalt nicht rechtlich."]}]},
   safety:{t:"Sicherung, Sync & App-Sperre",ic:"🔒",s:[
     {art:"💾",h:"Datensicherung",p:"Unter Einstellungen → Datensicherung → „Sicherung erstellen“ speicherst du alle Verträge, Vorlagen und Einstellungen in eine Datei – am besten in Google Drive oder iCloud. Bei einem neuen Handy spielst du sie mit „Sicherung einspielen“ wieder ein."},
     {art:"🔄",h:"Sync über mehrere Handys",p:"Auf Android kannst du unter Einstellungen → Synchronisieren eine Sync-Datei z. B. in deinem Google Drive anlegen und auf jedem Gerät verbinden. Die App gleicht dann automatisch ab."},
