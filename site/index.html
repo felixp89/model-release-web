@@ -407,6 +407,24 @@ label.f[data-k="tBody"]{position:relative}
 .xrow select,.xrow input{width:100%;padding:10px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:16px;min-width:0}
 .xrow .mdel{width:38px;height:38px}
 .xwrap .lnk-inline{font-size:.9rem}
+.radio.check input{accent-color:var(--accent)}
+.selffill{align-items:flex-start;background:var(--accent-soft);border-radius:12px;padding:12px;margin:0 0 14px}
+.selffill small{color:var(--muted);font-size:.85rem;line-height:1.4}
+.selffill input{margin-top:3px}
+.cal-btns{display:flex;flex-wrap:wrap;gap:8px}
+.inc-nav{display:flex;align-items:center;justify-content:center;gap:18px;margin:4px 0 12px;font-size:1.3rem}
+.inc-nav .btn{min-width:48px}
+.inc-top{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px}
+.inc-sum{font-family:var(--serif);font-size:2.4rem;font-weight:700}
+.inc-m{display:flex;justify-content:space-between;margin:14px 0 4px;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.inc-m:first-child{margin-top:0}
+.inc-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.inc-o{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;background:none;border:0;padding:0;text-align:left;cursor:pointer;color:var(--ink)}
+.inc-o small{color:var(--muted);font-size:.82rem}
+.inc-a{font-weight:600;white-space:nowrap}
+.inc-p{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 10px;font-size:.8rem;cursor:pointer;color:var(--muted);white-space:nowrap}
+.inc-p.on{border-color:var(--ok);color:var(--ok)}
+.fillmode #settingsBtn{display:none}
 .legal{border-left:3px solid var(--line);padding:2px 0 2px 10px;margin:14px 0 0}
 .note{font-size:.88rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:14px}
 
@@ -468,15 +486,17 @@ details.help code{font-family:ui-monospace,Menlo,Consolas,monospace;background:v
     <p class="hint legal" id="formLegal" hidden>Muster-Vorlage: nicht anwaltlich geprüft, Verwendung in eigener Verantwortung.</p>
     <div class="card">
       <p class="card-label" id="modelCardLabel" hidden>Model 1 – unterschreibt diesen Vertrag</p>
+      <label class="tog selffill" id="selfFillWrap"><input type="checkbox" id="selfFill"><span><b>Das Model trägt seine Daten selbst ein</b><br><small>Du schickst einen Link per WhatsApp. Das Model füllt aus und unterschreibt, du unterschreibst zum Schluss.</small></span></label>
+      <p class="hint" id="selfFillHint" hidden style="margin:-4px 0 12px">Adresse, Geburtsdatum und weitere Angaben trägt das Model selbst ein. Name und Telefon kannst du schon angeben, damit sich der richtige Chat öffnet.</p>
       <div class="grid">
-        <label class="f full" data-k="name">Vor- und Nachname<input id="m_name" autocomplete="name" list="knownNames"></label>
+        <label class="f full" data-k="name"><span class="lt">Vor- und Nachname</span><input id="m_name" autocomplete="name" list="knownNames"></label>
         <datalist id="knownNames"></datalist>
         <div class="known full" id="knownBox" hidden><p id="knownText"></p><button type="button" class="btn" id="knownTake">Daten übernehmen</button></div>
-        <div class="f full xwrap"><span class="xl">Social Media <small>(freiwillig)</small></span><div id="socRows"></div><button type="button" class="lnk-inline" id="socAdd">+ Weitere Plattform</button></div>
+        <div class="f full xwrap" id="socWrap"><span class="xl">Social Media <small>(freiwillig)</small></span><div id="socRows"></div><button type="button" class="lnk-inline" id="socAdd">+ Weitere Plattform</button></div>
         <label class="f full" data-k="adresse">Adresse<input id="m_adresse" autocomplete="street-address" placeholder="Straße Nr., PLZ Ort"></label>
-        <label class="f" data-k="telefon">Telefon<span class="inrow"><input id="m_telefon" type="tel" autocomplete="tel" placeholder="0152 …"><button type="button" class="btn ghost pick" id="pickContact" hidden>Aus Kontakten</button></span></label>
+        <label class="f" data-k="telefon"><span class="lt">Telefon</span><span class="inrow"><input id="m_telefon" type="tel" autocomplete="tel" placeholder="0152 …"><button type="button" class="btn ghost pick" id="pickContact" hidden>Aus Kontakten</button></span></label>
         <label class="f" data-k="geburtsdatum">Geburtsdatum<input id="m_geburtsdatum" type="date"></label>
-        <div class="f full xwrap"><span class="xl">Weitere Angaben <small>(freiwillig, z. B. Künstlername oder E-Mail)</small></span><div id="extraRows"></div><button type="button" class="lnk-inline" id="extraAdd">+ Weitere Angabe hinzufügen</button><datalist id="extraKeys"></datalist></div>
+        <div class="f full xwrap" id="extraWrap"><span class="xl">Weitere Angaben <small>(freiwillig, z. B. Künstlername oder E-Mail)</small></span><div id="extraRows"></div><button type="button" class="lnk-inline" id="extraAdd">+ Weitere Angabe hinzufügen</button><datalist id="extraKeys"></datalist></div>
         <label class="f" data-k="datum"><span id="lblDatum">Datum des Shootings</span><input id="s_datum" type="date"></label>
         <label class="f" data-k="ort"><span id="lblOrt">Ort des Shootings</span><input id="s_ort"></label>
         <div class="f full loc-pick" id="locWrap" hidden>
@@ -505,10 +525,13 @@ details.help code{font-family:ui-monospace,Menlo,Consolas,monospace;background:v
     <p class="lead">Gib dem Model Zeit, den Vertrag in Ruhe zu lesen.</p>
     <div class="paper" id="reviewPaper"></div>
     <div class="actions">
-      <button class="btn ghost" data-go="form">Daten ändern</button>
+      <button class="btn ghost" data-go="form" id="reviewBack">Daten ändern</button>
       <span class="grow"></span>
       <button class="btn" id="sendForSign">Zum Unterschreiben senden</button>
-      <button class="btn pri" data-go="sign">Jetzt unterschreiben</button>
+      <button class="btn pri" data-go="sign" id="stdSign">Jetzt unterschreiben</button>
+      <button class="btn pri" id="sendForFill" hidden>Zum Ausfüllen senden</button>
+      <button class="btn pri" id="fillSign" hidden>Jetzt unterschreiben</button>
+      <button class="btn pri" id="finalSign" hidden>Prüfen und unterschreiben</button>
     </div>
   </section>
 
@@ -554,6 +577,7 @@ details.help code{font-family:ui-monospace,Menlo,Consolas,monospace;background:v
       <button class="btn" id="pdfBtn">PDF speichern</button>
     </div>
     <p class="share-note" id="chatNote" hidden style="margin:-6px 0 14px"></p>
+    <div class="card" id="calBox" hidden style="margin:0 0 14px"><b>In Kalender eintragen</b><p class="hint" style="margin:2px 0 10px">Öffnet deinen Kalender mit einem fertigen Termin – du musst nur noch speichern.</p><div class="cal-btns" id="calBtns"></div></div>
     <div id="shareFallback" hidden>
       <p class="share-note">Die PDF wurde gespeichert. Hänge sie im WhatsApp-Chat über die Büroklammer an.</p>
       <a class="wa-link" id="waLink" target="_blank" rel="noopener">WhatsApp-Chat öffnen</a>
@@ -585,6 +609,43 @@ details.help code{font-family:ui-monospace,Menlo,Consolas,monospace;background:v
       <span class="grow"></span>
       <button class="btn danger" id="deleteBtn" hidden>Vertrag löschen</button>
     </div>
+  </section>
+
+  <!-- AUSFÜLLEN DURCH DAS MODEL (Ausfüll-Link) -->
+  <section class="view" id="v-fill">
+    <h1 id="fillTitle">Vertrag</h1>
+    <p class="lead" id="fillLead"></p>
+    <div class="card">
+      <div class="grid">
+        <label class="f full" data-fk="name">Vor- und Nachname<input id="f_name" autocomplete="name"></label>
+        <label class="f full" data-fk="adresse">Adresse<input id="f_adresse" autocomplete="street-address" placeholder="Straße Nr., PLZ Ort"></label>
+        <label class="f" data-fk="telefon">Telefon<input id="f_telefon" type="tel" autocomplete="tel"></label>
+        <label class="f" data-fk="geb">Geburtsdatum<input id="f_geb" type="date"></label>
+        <div class="f full xwrap"><span class="xl">Social Media <small>(freiwillig)</small></span><div id="fSocRows"></div><button type="button" class="lnk-inline" id="fSocAdd">+ Weitere Plattform</button></div>
+        <div class="f full xwrap"><span class="xl">Weitere Angaben <small>(freiwillig, z. B. Künstlername)</small></span><div id="fExtraRows"></div><button type="button" class="lnk-inline" id="fExtraAdd">+ Weitere Angabe hinzufügen</button></div>
+        <div class="f full" id="fGuardWrap" hidden><div class="banner warn" style="margin:0 0 10px"><p>Du bist am Tag des Shootings unter 18. Eine erziehungsberechtigte Person muss mit unterschreiben.</p></div>
+          <label class="f" data-fk="gname">Name der erziehungsberechtigten Person<input id="f_gname"></label></div>
+      </div>
+    </div>
+    <p class="hint">Deine Daten gehen nur an den Absender des Vertrags. Sie werden nirgendwo sonst gespeichert.</p>
+    <div class="actions"><span class="grow"></span><button class="btn pri" id="fillNext">Weiter zum Vertrag</button></div>
+  </section>
+  <section class="view" id="v-filldone">
+    <div class="done-mark" aria-hidden="true"></div>
+    <h1>Unterschrieben!</h1>
+    <p class="lead" id="fillDoneText"></p>
+    <div class="actions"><button class="btn pri" id="fillResendPdf">Noch einmal senden</button></div>
+    <p class="hint" style="margin-top:20px">Du kannst die Seite danach einfach schließen.</p>
+  </section>
+
+  <!-- EINNAHMEN -->
+  <section class="view" id="v-income">
+    <h1>Pay-Shooting-Einnahmen</h1>
+    <div class="inc-nav"><button class="btn ghost" id="incPrev" aria-label="Vorheriges Jahr">‹</button><b id="incYear"></b><button class="btn ghost" id="incNext" aria-label="Nächstes Jahr">›</button></div>
+    <div class="card inc-top"><span class="inc-sum" id="incSum">0 €</span><span class="hint" id="incSub"></span></div>
+    <div class="card" id="incList"></div>
+    <div class="actions"><button class="btn ghost" data-go="settings">Zurück</button><span class="grow"></span><button class="btn" id="incExport">Als Tabelle exportieren</button></div>
+    <p class="hint" style="margin-top:12px">Dient nur zur eigenen Übersicht und ersetzt keine Buchhaltung. Die Daten bleiben auf deinem Gerät.</p>
   </section>
 
   <!-- IMPRESSUM / DATENSCHUTZ -->
@@ -825,6 +886,12 @@ Das Honorar beträgt {Honorar in Euro} Euro.
       <div class="help-list" id="helpList"></div>
     </div>
 
+    <div class="card sec" id="incCard">
+      <b>Pay-Shooting-Einnahmen</b>
+      <p class="hint" style="margin:4px 0 10px">Zählt die Honorare aus deinen Verträgen pro Jahr zusammen – nur zur eigenen Übersicht, ersetzt keine Buchhaltung.</p>
+      <button class="btn" id="incOpen">Einnahmen ansehen</button>
+    </div>
+
     <div class="card sec" id="lockCard">
       <b>App-Sperre</b>
       <p class="hint" style="margin:4px 0 12px">Schützt die Daten deiner Models, wenn jemand anderes dein Handy in die Hand nimmt.</p>
@@ -943,6 +1010,7 @@ Das Honorar beträgt {Honorar in Euro} Euro.
     <div class="modal-acts" style="margin-top:12px"><button class="btn ghost" id="docPickCancel">Abbrechen</button></div>
   </div>
 </div>
+<input type="file" id="fillReturnFile" accept="application/pdf,.pdf" hidden>
 <div class="modal" id="recvModal" hidden role="dialog" aria-modal="true" aria-labelledby="recvTitle">
   <div class="modal-box">
     <h3 id="recvTitle">Vertrag erhalten</h3>
@@ -989,6 +1057,7 @@ Das Honorar beträgt {Honorar in Euro} Euro.
   <div class="ed-mini" id="edMini" hidden>
     <p id="edMiniTxt"></p>
     <input id="edM1"><input id="edM2">
+    <label class="tog" id="edMultiWrap" hidden><input type="checkbox" id="edMulti"><span>Mehrere Antworten möglich</span></label>
     <div class="ed-acts"><button class="btn ghost" id="edMiniNo">Abbrechen</button><button class="btn pri" id="edMiniOk">Einfügen</button></div>
   </div>
   <textarea id="edTa" class="code" spellcheck="true"></textarea>
@@ -1037,6 +1106,8 @@ const CONFIG = {
   DEV_NAME: "Felix Pohl",
   DEV_INSTAGRAM: "blackisback89",
   // Impressum: Anschrift und E-Mail des Anbieters
+  // Adresse deiner Web-App (GitHub Pages) für Ausfüll-Links, z. B. "https://deinname.github.io/model-release-web/"
+  WEB_URL: "https://felixp89.github.io/model-release-web/",
   DEV_ADDRESS: "Elsterweg 28, 01917 Kamenz",
   DEV_EMAIL: "Snakeg54@googlemail.com",
   // Dein PayPal.me-Link zum Unterstützen, z. B. "https://paypal.me/DeinName". Leer = Knopf ausgeblendet
@@ -1058,7 +1129,17 @@ Der Fotograf erhält die zeitlich, räumlich und inhaltlich uneingeschränkten N
 Das Modell willigt ausdrücklich in die Erstellung, Speicherung, Bearbeitung und Veröffentlichung der Bildnisse seiner Person im Sinne des § 22 KUG und der DSGVO ein.
 Das Modell darf die bereitgestellten Bilder für das eigene Portfolio und zur Veröffentlichung auf seinen privaten sozialen Medien verwenden.
 Eine kommerzielle Nutzung (Verkauf, Werbung für Dritte) bedarf der schriftlichen Zustimmung beider Parteien.
-Bei Veröffentlichungen wird der jeweils andere Vertragspartner angemessen genannt/verlinkt.
+Wie wird das Model bei Veröffentlichungen genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Vor- und Nachnamen
+[ ] Nur mit Vornamen
+[ ] Mit Künstlernamen
+[ ] Ohne Namensnennung
+Wie wird der Fotograf bei Veröffentlichungen des Models genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Namen bzw. Unternehmensnamen
+[ ] Mit Namen und Webseite
+Maßgeblich sind die im Kopf dieses Vertrags angegebenen Namen und Profile.
 
 # 3. Bereitstellung der Bilder
 [Feld: Anzahl Bilder = 5 | 10 | 15 | 20 | 30]
@@ -1105,7 +1186,17 @@ Die Auswahl und Bearbeitung der Bilder trifft der Fotograf. Das Model verändert
 # 3. Nutzung
 Beide Parteien dürfen die Bilder zeitlich und räumlich unbegrenzt für nicht-kommerzielle Zwecke nutzen, insbesondere für Portfolio, eigene Website und Social Media.
 Eine kommerzielle Nutzung (Verkauf, Werbung für Dritte) ist nur mit vorheriger schriftlicher Zustimmung der anderen Partei erlaubt.
-Bei Veröffentlichungen wird der jeweils andere Vertragspartner genannt bzw. verlinkt.
+Wie wird das Model bei Veröffentlichungen genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Vor- und Nachnamen
+[ ] Nur mit Vornamen
+[ ] Mit Künstlernamen
+[ ] Ohne Namensnennung
+Wie wird der Fotograf bei Veröffentlichungen des Models genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Namen bzw. Unternehmensnamen
+[ ] Mit Namen und Webseite
+Maßgeblich sind die im Kopf dieses Vertrags angegebenen Namen und Profile.
 
 # 4. Einwilligung
 Das Model willigt in die Anfertigung, Bearbeitung und Veröffentlichung der Bilder im oben genannten Umfang ein (§ 22 KUG, Art. 6 Abs. 1 DSGVO).
@@ -1136,11 +1227,17 @@ Eine Bearbeitung der Bilder durch das Model (Filter, Retusche, Zuschnitt, Entfer
 Eine kommerzielle Nutzung durch eine der Parteien ist nur mit vorheriger schriftlicher Zustimmung der anderen Partei erlaubt.
 
 # 5. Namensnennung
-Wie soll das Model bei Veröffentlichungen genannt werden?
-[x] Mit Vor- und Nachnamen bzw. Instagram-Profil
+Wie wird das Model bei Veröffentlichungen genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Vor- und Nachnamen
 [ ] Nur mit Vornamen
+[ ] Mit Künstlernamen
 [ ] Ohne Namensnennung
-Das Model nennt bzw. verlinkt bei eigenen Veröffentlichungen den Fotografen.
+Wie wird der Fotograf bei Veröffentlichungen des Models genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Namen bzw. Unternehmensnamen
+[ ] Mit Namen und Webseite
+Maßgeblich sind die im Kopf dieses Vertrags angegebenen Namen und Profile.
 
 # 6. Einwilligung und Widerruf
 Das Model willigt in die Anfertigung, Speicherung, Bearbeitung und Veröffentlichung der Bilder im vereinbarten Umfang ein (§ 22 KUG, Art. 6 Abs. 1 DSGVO).
@@ -1172,10 +1269,13 @@ Die Volljährigkeit wurde vor dem Shooting geprüft durch:
 [ ] Persönliche Bekanntschaft
 
 # 3. Art der Aufnahmen
-Folgende Art von Aufnahmen wurde vorab vereinbart:
-[ ] Dessous / Lingerie
-[x] Teilakt (implied nude, keine Intimbereiche sichtbar)
-[ ] Akt
+Folgende Arten von Aufnahmen wurden vorab vereinbart:
+[[x]] Dessous / Lingerie
+[[ ]] Verdeckter Akt (unbekleidet, Intimbereiche durch Hände, Stoff oder Pose verdeckt)
+[[ ]] Teilakt (teilweise unbekleidet, z. B. oberkörperfrei, Intimbereich bedeckt)
+[[ ]] Akt (vollständig unbekleidet)
+[Feld: Weitere Absprachen zu den Aufnahmen = keine]
+Weitere Absprachen zu den Aufnahmen: {Weitere Absprachen zu den Aufnahmen}
 Darüber hinausgehende Aufnahmen werden nicht gemacht. Jede Pose wird vorher abgesprochen.
 
 # 4. Freiwilligkeit und Abbruch
@@ -1192,6 +1292,16 @@ Freigegebene Bilder dürfen veröffentlicht werden:
 [x] Nur im Portfolio auf der eigenen Website des Fotografen
 [ ] Website und Social Media des Fotografen
 [ ] Gar nicht, die Bilder sind nur für das Model bestimmt
+Wie wird das Model bei Veröffentlichungen genannt bzw. verlinkt?
+[x] Ohne Namensnennung
+[ ] Mit Künstlernamen
+[ ] Mit Instagram- bzw. Social-Media-Namen
+[ ] Nur mit Vornamen
+Wie wird der Fotograf bei Veröffentlichungen des Models genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Namen bzw. Unternehmensnamen
+[ ] Mit Namen und Webseite
+Maßgeblich sind die im Kopf dieses Vertrags angegebenen Namen und Profile.
 Eine Weitergabe an Dritte, ein Verkauf oder eine kommerzielle Nutzung ist ausgeschlossen, solange das Model nicht schriftlich zustimmt.
 
 # 7. Bilder für das Model
@@ -1232,7 +1342,10 @@ Die Bilder dürfen vom Fotografen veröffentlicht werden:
 [x] Nur im Portfolio auf der eigenen Website
 [ ] Website und Social Media des Fotografen
 [ ] Gar nicht, die Bilder sind nur für die Familie bestimmt
-Bei Veröffentlichungen wird das Model höchstens mit Vornamen genannt. Wohnort, Schule und Kontaktdaten werden nie veröffentlicht.
+Wie wird das Model bei Veröffentlichungen genannt?
+[x] Nur mit Vornamen
+[ ] Ohne Namensnennung
+Wohnort, Schule und Kontaktdaten werden nie veröffentlicht.
 Eine kommerzielle Nutzung ist ausgeschlossen, solange die Erziehungsberechtigten nicht schriftlich zustimmen.
 
 # 6. Einwilligung und Widerruf
@@ -1268,7 +1381,17 @@ Das Model erhält ein einfaches, zeitlich und räumlich unbegrenztes Nutzungsrec
 Darf der Fotograf die Bilder für Eigenwerbung (Portfolio, Website, Social Media) nutzen?
 [x] Ja
 [ ] Nein
-Bei Veröffentlichungen wird der Fotograf genannt bzw. verlinkt.
+Wie wird das Model bei Veröffentlichungen genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Vor- und Nachnamen
+[ ] Nur mit Vornamen
+[ ] Mit Künstlernamen
+[ ] Ohne Namensnennung
+Wie wird der Fotograf bei Veröffentlichungen des Models genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Namen bzw. Unternehmensnamen
+[ ] Mit Namen und Webseite
+Maßgeblich sind die im Kopf dieses Vertrags angegebenen Namen und Profile.
 
 # 5. Absage und Nichterscheinen
 [Feld: Ausfallpauschale bei Nichterscheinen = 50 % des Honorars | 100 % des Honorars | 30 € | 50 € | 80 €]
@@ -1297,12 +1420,19 @@ Das Modell ist damit einverstanden, dass Bilder entstehen, auf denen es gemeinsa
 Der Fotograf darf die Bilder zeitlich und räumlich unbegrenzt für nicht-kommerzielle Eigenwerbung nutzen (Portfolio, eigene Website, Social Media, Ausstellungen, Fotowettbewerbe).
 Das Modell darf die bereitgestellten Bilder, auch Gruppenbilder, für das eigene Portfolio und private Social-Media-Profile nutzen.
 Eine kommerzielle Nutzung ist nur mit vorheriger schriftlicher Zustimmung beider Parteien erlaubt. Bei Gruppenbildern ist zusätzlich die Zustimmung aller darauf abgebildeten Personen nötig.
-Bei Veröffentlichungen wird der jeweils andere Vertragspartner genannt bzw. verlinkt.
+Wie wird der Fotograf bei Veröffentlichungen des Models genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Namen bzw. Unternehmensnamen
+[ ] Mit Namen und Webseite
+Maßgeblich sind die im Kopf dieses Vertrags angegebenen Namen und Profile.
 
-# 4. Namensnennung bei Gruppenbildern
-Darf das Modell bei Gruppenbildern genannt oder verlinkt werden, auch wenn andere Teilnehmende sie veröffentlichen?
-[x] Ja, mit Namen bzw. Instagram-Profil
-[ ] Nein, bitte ohne Namensnennung
+# 4. Namensnennung
+Wie wird das Modell bei Veröffentlichungen genannt bzw. verlinkt – auch wenn andere Teilnehmende Gruppenbilder veröffentlichen?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Vor- und Nachnamen
+[ ] Nur mit Vornamen
+[ ] Mit Künstlernamen
+[ ] Ohne Namensnennung
 
 # 5. Bilder
 [Feld: Anzahl Bilder = 5 | 10 | 15 | 20 | 30]
@@ -1365,9 +1495,11 @@ Die abgebildeten Models haben eigene Rechte am eigenen Bild. Die Visagistin bzw.
 # 6. Nennung der Visagistin bzw. des Visagisten
 [Feld: Instagram oder Künstlername = –]
 Instagram bzw. Künstlername: {Instagram oder Künstlername}
-Darf die Visagistin bzw. der Visagist bei Veröffentlichungen des Fotografen genannt bzw. verlinkt werden?
-[x] Ja, mit Namen bzw. Instagram
-[ ] Nein, ohne Nennung
+Wie wird die Visagistin bzw. der Visagist bei Veröffentlichungen des Fotografen genannt bzw. verlinkt?
+[x] Mit Instagram- bzw. Social-Media-Namen
+[ ] Mit Vor- und Nachnamen
+[ ] Mit Künstlernamen
+[ ] Ohne Namensnennung
 
 # 7. Durchführung und Hygiene
 Die Visagistin bzw. der Visagist arbeitet mit sauberen Werkzeugen und hygienisch einwandfreien Produkten und fragt die Models vor Beginn nach Allergien und Unverträglichkeiten. Für Schäden, die schuldhaft verursacht werden, haftet jede Seite im gesetzlichen Umfang.
@@ -1547,9 +1679,15 @@ function parseBody(body){
     if(fm){ group=null; const [lab,...def]=fm[1].split("="); const d=def.join("=").trim();
       const opts=d.includes("|")?d.split("|").map(x=>x.trim()).filter(Boolean):null;
       blocks.push({t:"field",label:lab.trim(),def:opts?opts[0]:d,options:opts}); return; }
+    const mm=l.match(/^\[\[( |x|X)?\]\]\s*(.+)$/);
+    if(mm){
+      if(!group||!group.multi){ group={t:"choice",multi:true,id:gi++,label:lastText||lastHeading||"Auswahl",options:[],def:[]}; blocks.push(group); }
+      if(mm[1]&&mm[1].toLowerCase()==="x") group.def.push(group.options.length);
+      group.options.push(mm[2]); return;
+    }
     const m=l.match(/^\[( |x|X)?\]\s*(.+)$/);
     if(m){
-      if(!group){ group={t:"choice",id:gi++,label:lastText||lastHeading||"Auswahl",options:[],def:-1}; blocks.push(group); }
+      if(!group||group.multi){ group={t:"choice",id:gi++,label:lastText||lastHeading||"Auswahl",options:[],def:-1}; blocks.push(group); }
       if(m[1]&&m[1].toLowerCase()==="x") group.def=group.options.length;
       group.options.push(m[2]); return;
     }
@@ -1569,6 +1707,7 @@ function rolesOf(body){ const bl=parseBody(body); const r=bl.find(b=>b.t==="role
 const rolesFor=c=>{ const r=c.roles||rolesOf(c.tpl.body); return r.ev?r:{...r,ev:"Shooting",evGen:"des Shootings"}; };
 const noHead=body=>parseBody(body).some(b=>b.t==="nohead");
 const noBirth=body=>parseBody(body).some(b=>b.t==="nobirth");
+const chosen=(c,b,i)=>{ const v=c.choices&&c.choices[b.id]; return Array.isArray(v)?v.includes(i):v===i; };
 function fillPlaceholders(text,c){
   const p=c.photographer||settings.photographer;
   const map={name:c.model.name,vorname:firstName(c.model.name),adresse:c.model.adresse,telefon:c.model.telefon,geburtsdatum:deDate(c.model.geburtsdatum),datum:deDate(c.shoot.datum),ort:c.shoot.ort,
@@ -1750,8 +1889,9 @@ document.addEventListener("click",e=>{
   if(to==="review") renderReview();
   show(to);
 });
-$("#homeBtn").onclick=()=>show("home");
-const BACK={legal:"settings",addsign:"done",addendum:"done",import:"home",preview:"home",form:"home",review:"form",sign:"review",done:"home",settings:"home",tpl:"home"};
+$("#homeBtn").onclick=()=>show(document.body.classList.contains("fillmode")?($("#v-filldone").classList.contains("on")?"filldone":"fill"):"home");
+const BACK={income:"settings",fill:"fill",filldone:"filldone",legal:"settings",addsign:"done",addendum:"done",import:"home",preview:"home",form:"home",review:"form",sign:"review",done:"home",settings:"home",tpl:"home"};
+window.addEventListener("hashchange",()=>{ if(/^#fill=/.test(location.hash)) checkFillLink(); });
 window.appBack=function(){
   if(!$("#guide").hidden){ if(guideIdx>0){ guideIdx--; renderGuide(); } else closeGuide(); return true; }
   if(!$("#hintModal").hidden){ $("#hintOk").click(); return true; }
@@ -1821,11 +1961,11 @@ function renderTemplates(){
   $$("[data-row]").forEach(b=>b.onclick=()=>{ const id=b.dataset.row; openTplRow=openTplRow===id?null:id; renderTemplates(); });
 }
 let archMode=KV.get("archMode","model"), archOpen=null;
-const personOf=c=>c.received?c.received.from.name:c.model.name;
+const personOf=c=>c.received?c.received.from.name:(c.model.name||"Ausfüll-Link");
 const MONTHS=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 function cTags(c,skipFuture){
   const du=dueInfo(c);
-  return (c.received?`<span class="tag recv">erhalten von ${esc(c.received.from.name)}</span>`:"")+(du&&!du.done&&du.days<0?`<span class="tag due-bad">Bilder überfällig</span>`:du&&!du.done&&du.days<=7?`<span class="tag warn">Bilder in ${du.days===0?"heute fällig":du.days+(du.days===1?" Tag":" Tagen")}</span>`.replace("Bilder in heute fällig","Bilder heute fällig"):"")+(c.group?`<span class="tag grp">Gruppe · ${groupPool(c).length}</span>`:"")+(c.pending?(c.received?'<span class="tag warn">bitte unterschreiben</span>':'<span class="tag warn">wartet auf Unterschrift</span>'):"")+(c.received&&c.signedByMe?(c.sentBackAt?'<span class="tag ok">unterschrieben &amp; zurückgeschickt</span>':'<span class="tag warn">noch zurücksenden</span>'):"")+(c.signedViaApp?'<span class="tag">per App unterschrieben</span>':"")+(c.imported?'<span class="tag">importiert</span>':"")+
+  return (c.received?`<span class="tag recv">erhalten von ${esc(c.received.from.name)}</span>`:"")+(du&&!du.done&&du.days<0?`<span class="tag due-bad">Bilder überfällig</span>`:du&&!du.done&&du.days<=7?`<span class="tag warn">Bilder in ${du.days===0?"heute fällig":du.days+(du.days===1?" Tag":" Tagen")}</span>`.replace("Bilder in heute fällig","Bilder heute fällig"):"")+(c.group?`<span class="tag grp">Gruppe · ${groupPool(c).length}</span>`:"")+(c.pending?(c.received?'<span class="tag warn">bitte unterschreiben</span>':c.awaitingFill?'<span class="tag warn">wartet aufs Ausfüllen</span>':'<span class="tag warn">wartet auf Unterschrift</span>'):"")+(c.received&&c.signedByMe?(c.sentBackAt?'<span class="tag ok">unterschrieben &amp; zurückgeschickt</span>':'<span class="tag warn">noch zurücksenden</span>'):"")+(c.signedViaApp?'<span class="tag">per App unterschrieben</span>':"")+(c.imported?'<span class="tag">importiert</span>':"")+
     (!skipFuture&&futureContract([c])?'<span class="tag">auch zukünftig</span>':"")+
     ((c.addenda||[]).some(a=>a.status==="sent")?'<span class="tag">Nachtrag offen</span>':(c.addenda||[]).some(a=>a.status==="signed")?'<span class="tag">+ Nachtrag</span>':"");
 }
@@ -2242,7 +2382,7 @@ function openPreview(id){
   previewId=id;
   const c={tpl:{title:t.title,heading:t.heading,body:t.body},model:{name:"",adresse:"",telefon:"",geburtsdatum:""},shoot:{datum:"",ort:""},
     guardian:{name:""},choices:{},fields:{},zusatz:{on:false,text:""},signatures:{}};
-  parseBody(t.body).forEach(b=>{ if(b.t==="choice") c.choices[b.id]=b.def; if(b.t==="field") c.fields[b.label]=b.def||""; });
+  parseBody(t.body).forEach(b=>{ if(b.t==="choice") c.choices[b.id]=b.multi?b.def.slice():b.def; if(b.t==="field") c.fields[b.label]=b.def||""; });
   $("#prevTitle").textContent=t.title;
   $("#prevSub").textContent=(t.subtitle?t.subtitle+". ":"")+"So sieht der Vertrag aus. Leere Linien füllst du beim Erstellen aus, Vorauswahlen kannst du dort noch ändern.";
   $("#prevLegal").hidden=!t.builtin;
@@ -2272,7 +2412,7 @@ $("#tplPreviewBtn").onclick=()=>{
   const t=readTplEditor();
   const c={...SAMPLE,tpl:{title:t.title,heading:t.heading||t.title,body:t.body}};
   c.fields={};
-  parseBody(t.body).forEach(b=>{ if(b.t==="choice") c.choices[b.id]=b.def>=0?b.def:-1; if(b.t==="field") c.fields[b.label]=b.def||"["+b.label+"]"; });
+  parseBody(t.body).forEach(b=>{ if(b.t==="choice") c.choices[b.id]=b.multi?b.def.slice():(b.def>=0?b.def:-1); if(b.t==="field") c.fields[b.label]=b.def||"["+b.label+"]"; });
   $("#tplPreview").innerHTML=contractHTML(c,false); $("#tplPreview").hidden=false;
   $("#tplPreview").scrollIntoView({behavior:"smooth",block:"start"});
 };
@@ -2339,6 +2479,7 @@ function startDraft(tplId){
   $("#formTitle").textContent=isGroup?"Daten der Modelle":(Rf.m==="Model"?"Daten des Models":"Daten: "+Rf.m);
   $("#modelCardLabel").hidden=!isGroup;
   $('[data-k="geburtsdatum"]').hidden=noBirth(draft.tpl.body);
+  $("#selfFill").checked=false; applySelfFill(false); $("#selfFillWrap").hidden=!!groupLabel(draft.tpl.body);
   renderLocPick();
   Object.values(pads).forEach(p=>p.clear());
   $("#sign_ort").value=""; $("#sign_datum").value="";
@@ -2365,8 +2506,11 @@ function renderChoices(){
       }
     }
     if(b.t==="choice"){
-      h+=`<fieldset class="sec" data-choice="${b.id}"><legend>${esc(b.label)}</legend>`+
-        b.options.map((o,i)=>`<label class="radio"><input type="radio" name="ch${b.id}" value="${i}" ${b.def===i?"checked":""}><span>${esc(o)}</span></label>`).join("")+`</fieldset>`;
+      h+= b.multi
+        ? `<fieldset class="sec" data-choice="${b.id}" data-multi-choice><legend>${esc(b.label)} <small class="hint">(mehrere möglich)</small></legend>`+
+          b.options.map((o,i)=>`<label class="radio check"><input type="checkbox" name="ch${b.id}" value="${i}" ${b.def.includes(i)?"checked":""}><span>${esc(o)}</span></label>`).join("")+`</fieldset>`
+        : `<fieldset class="sec" data-choice="${b.id}"><legend>${esc(b.label)}</legend>`+
+          b.options.map((o,i)=>`<label class="radio"><input type="radio" name="ch${b.id}" value="${i}" ${b.def===i?"checked":""}><span>${esc(o)}</span></label>`).join("")+`</fieldset>`;
     }
     if(b.t==="zusatz"){
       h+=`<fieldset class="sec"><legend>Zusätzliche Vereinbarungen?</legend>
@@ -2538,7 +2682,9 @@ function readForm(){
   draft.fields={};
   $$("[data-field]").forEach(l=>{ draft.fields[l.dataset.field]=fieldValue(l); });
   const ml=$$("[data-multi]")[0]; draft.participants = ml ? multiGet(ml) : [];
-  $$("[data-choice]").forEach(fs=>{ const c=fs.querySelector("input:checked"); draft.choices[fs.dataset.choice]=c?+c.value:-1; });
+  $$("[data-choice]").forEach(fs=>{
+    if(fs.hasAttribute("data-multi-choice")) draft.choices[fs.dataset.choice]=[...fs.querySelectorAll("input:checked")].map(x=>+x.value);
+    else { const c=fs.querySelector("input:checked"); draft.choices[fs.dataset.choice]=c?+c.value:-1; } });
   const z=$('input[name="zusatz"]:checked');
   draft.zusatz={on:!!z&&z.value==="ja",text:$("#zusatzText")?$("#zusatzText").value.trim():""};
   if(!draft.zusatz.on) draft.zusatz.text="";
@@ -2559,6 +2705,7 @@ $("#m_geburtsdatum").onchange=updateMinor; $("#s_datum").onchange=updateMinor;
 $("#toReview").onclick=()=>{
   readForm();
   const req={name:draft.model.name,adresse:draft.model.adresse,telefon:draft.model.telefon,geburtsdatum:draft.model.geburtsdatum,datum:draft.shoot.datum,ort:draft.shoot.ort};
+  if(draft.selfFill){ delete req.name; delete req.adresse; delete req.telefon; delete req.geburtsdatum; draft.minor=false; }
   if(noBirth(draft.tpl.body)) delete req.geburtsdatum;
   if(draft.minor) req.guardian=draft.guardian.name;
   if(draft.zusatz.on) req.zusatzText=draft.zusatz.text;
@@ -2575,9 +2722,9 @@ $("#toReview").onclick=()=>{
     $('[data-k="geburtsdatum"]').classList.add("err");
     toast("Diese Vorlage ist nur für volljährige Models."); return;
   }
-  if(maybeWarnFuture(contractsOf(draft.model.name,draft.model.telefon))) return;
+  if(!draft.selfFill && maybeWarnFuture(contractsOf(draft.model.name,draft.model.telefon))) return;
   const open=$$("[data-choice]").find(fs=>!fs.querySelector("input:checked"));
-  if(open){ toast("Bitte bei „"+open.querySelector("legend").textContent+"“ etwas auswählen."); open.scrollIntoView({block:"center"}); return; }
+  if(open){ toast("Bitte bei „"+open.querySelector("legend").textContent.replace(/\s*\(mehrere möglich\)/,"")+"“ etwas auswählen."); open.scrollIntoView({block:"center"}); return; }
   renderReview(); show("review");
 };
 
@@ -2599,7 +2746,7 @@ function contractHTML(c, withSigs){
     if(b.t==="h") h+=`<h4>${esc(fillPlaceholders(b.text,c))}</h4>`;
     if(b.t==="field" && !usesPlaceholder(c.tpl.body,b.label)) h+=`<p>${esc(b.label)}: ${f((c.fields||{})[b.label]||b.def||"")}</p>`;
     if(b.t==="p") h+=`<p>${esc(fillPlaceholders(b.text,c))}</p>`;
-    if(b.t==="choice") h+=b.options.map((o,i)=>`<div class="chk"><span class="box ${c.choices[b.id]===i?"x":""}"></span><span>${esc(fillPlaceholders(o,c))}</span></div>`).join("");
+    if(b.t==="choice") h+=b.options.map((o,i)=>`<div class="chk"><span class="box ${chosen(c,b,i)?"x":""}"></span><span>${esc(fillPlaceholders(o,c))}</span></div>`).join("");
     if(b.t==="zusatz"){
       h+=`<p style="margin-top:10px">Zusätzliche Vereinbarungen:</p>
       <div class="chk"><span class="box ${c.zusatz.on?"x":""}"></span><span>Ja</span></div>
@@ -2615,7 +2762,17 @@ function contractHTML(c, withSigs){
     ${c.minor?sig(withSigs&&c.signatures.guardian,"Unterschrift Erziehungsberechtigte/r"):""}</div>`;
   return h;
 }
-function renderReview(){ if(draft) $("#reviewPaper").innerHTML=contractHTML({...draft,photographer:settings.photographer},false); }
+function renderReview(){
+  if(!draft) return;
+  const mode=draft.mode||"", sf=!!draft.selfFill&&!mode;
+  $("#reviewPaper").innerHTML=contractHTML(mode==="fill"||mode==="final"?draft:{...draft,photographer:settings.photographer},mode==="final");
+  $("#sendForSign").hidden=sf||mode==="fill"||mode==="final"; $("#stdSign").hidden=sf||mode==="fill"||mode==="final";
+  $("#sendForFill").hidden=!sf; $("#fillSign").hidden=mode!=="fill"; $("#finalSign").hidden=mode!=="final";
+  $("#reviewBack").hidden=mode==="final"; $("#reviewBack").dataset.go=mode==="fill"?"fill":"form";
+  $("#v-review h1").textContent=mode==="fill"?"Vertrag lesen":mode==="final"?"Daten prüfen":"Vertrag prüfen";
+  $("#v-review .lead").textContent=mode==="fill"?"Lies den Vertrag in Ruhe durch. Wenn alles passt, unterschreibst du unten."
+    :mode==="final"?`${draft.model.name} hat ausgefüllt und unterschrieben. Prüf die Daten – dann unterschreibst du zum Schluss.`:"Gib dem Model Zeit, den Vertrag in Ruhe zu lesen.";
+}
 
 /* ---------- Unterschrift ---------- */
 class Pad{
@@ -2674,15 +2831,17 @@ function prepareSign(){
   useSavedSig=!!settings.signature;
   applySavedSigUI();
   const mode=draft.mode||"";
-  $("#modelPadWrap").hidden=mode==="remote";
-  if(mode==="remote") $("#guardianPadWrap").hidden=true;
-  $("#photoPadWrap").hidden=mode==="complete";
-  $("#signTitle").textContent=mode==="remote"?"Deine Unterschrift":mode==="complete"?"Vertrag unterschreiben":"Unterschreiben";
+  $("#modelPadWrap").hidden=mode==="remote"||mode==="final";
+  if(mode==="remote"||mode==="final") $("#guardianPadWrap").hidden=true;
+  $("#photoPadWrap").hidden=mode==="complete"||mode==="fill";
+  $("#signTitle").textContent=mode==="remote"||mode==="final"?"Deine Unterschrift":mode==="complete"?"Vertrag unterschreiben":"Unterschreiben";
   $("#signLead").hidden=!mode;
   $("#signLead").textContent=mode==="remote"
     ? `Du unterschreibst zuerst. Danach geht der Vertrag an ${draft.model.name}, unterschreibt dort und kommt zurück.`
-    : mode==="complete" ? `Deine Unterschrift ist schon drin. Jetzt unterschreibt ${draft.model.name}.` : "";
-  $("#finish").textContent=mode==="remote"?"Unterschreiben und senden":"Vertrag abschließen";
+    : mode==="complete" ? `Deine Unterschrift ist schon drin. Jetzt unterschreibt ${draft.model.name}.`
+    : mode==="final" ? `${draft.model.name} hat schon unterschrieben. Mit deiner Unterschrift ist der Vertrag komplett.`
+    : mode==="fill" ? `Danach schickst du den Vertrag an ${(fillPkg&&fillPkg.from.name)||"den Absender"} zurück.` : "";
+  $("#finish").textContent=mode==="remote"?"Unterschreiben und senden":mode==="fill"?`Unterschreiben und an ${firstName((fillPkg&&fillPkg.from.name)||"")||"Absender"} senden`:"Vertrag abschließen";
 }
 function applySavedSigUI(){
   $("#savedSigBox").hidden=!useSavedSig;
@@ -2698,6 +2857,25 @@ $("#finish").onclick=async()=>{
   const so=$("#sign_ort").value.trim(), sd=$("#sign_datum").value;
   if(!so||!sd){ toast("Bitte Ort und Datum eintragen."); return; }
   const mode=draft.mode||"";
+  if(mode==="fill"){
+    if(pads.model.isEmpty()){ toast("Bitte unterschreib mit dem Finger."); return; }
+    if(draft.minor && pads.guardian.isEmpty()){ toast("Die Unterschrift der erziehungsberechtigten Person fehlt."); return; }
+    $("#sign_ort").value=""; $("#sign_datum").value="";
+    await sendFilled(so,sd); return;
+  }
+  if(mode==="final"){
+    if(!useSavedSig && pads.photographer.isEmpty()){ toast("Deine Unterschrift fehlt."); return; }
+    const rec=JSON.parse(JSON.stringify(contracts.find(c=>c.id===draft.completeId)||draft)); delete rec.mode;
+    rec.signatures={...(rec.signatures||{}),photographer:useSavedSig?settings.signature:pads.photographer.toPNG()};
+    if(!useSavedSig && $("#rememberSig").checked){ settings.signature=rec.signatures.photographer; saveSettingsDoc(); }
+    rec.sign={ort:so,datum:sd}; rec.pending=false; delete rec.awaitingFill; rec.signedAt=new Date().toISOString();
+    rec.signedViaApp={at:rec.signedAt,code:(rec.signedViaApp||{}).code||"",filled:true};
+    const saved=!!Store.save(rec);
+    draft=null; $("#sign_ort").value=""; $("#sign_datum").value="";
+    loadContracts(); openDone(rec,true,saved); scheduleReminders();
+    toast(`Fertig! Schick ${firstName(rec.model.name)} jetzt die fertige Fassung.`);
+    setTimeout(()=>$("#shareBtn").click(),600); return;
+  }
   if(mode==="complete"){
     if(pads.model.isEmpty()){ toast(`Die Unterschrift (${(draft&&draft.tpl&&rolesFor(draft).m)||(current&&rolesFor(current).m)||"Model"}) fehlt.`); return; }
     if(draft.minor && pads.guardian.isEmpty()){ toast("Die Unterschrift der erziehungsberechtigten Person fehlt."); return; }
@@ -2829,6 +3007,22 @@ async function handleIncoming(b64,name){
   const ok=fmtCode(await sha(JSON.stringify(pkg.contract)))===pkg.code;
   const c=pkg.contract;
   const own=contracts.find(x=>x.id===c.id && !x.received);
+  if(pkg.kind==="fill"){
+    if(own){ toast("Das ist dein eigener Vertrag zum Ausfüllen – er wartet auf die Daten des Models."); return; }
+    if(!ok){ toast("⚠️ Dieser Vertrag wurde verändert und kann nicht ausgefüllt werden."); return; }
+    startFill({from:pkg.from,contract:c},true); return;
+  }
+  if(own && pkg.kind==="filled"){
+    if(!own.awaitingFill){ toast("Dieser Vertrag ist schon ausgefüllt und unterschrieben."); return; }
+    const same=ok&&sameTermsFill(own,c)&&c.signatures&&c.signatures.model;
+    recvPkg={pkg,ok:same,mode:"filled",own};
+    const m=c.model||{};
+    $("#recvTitle").textContent=same?`✍️ ${m.name} hat ausgefüllt und unterschrieben`:"⚠️ Vertrag weicht ab";
+    $("#recvText").innerHTML = same
+      ? `<b>${esc(c.tpl.title)}</b> vom ${deDate(c.shoot.datum)}<br>${esc(m.name)} · ${esc(m.adresse||"")}<br>${esc(m.telefon||"")}${m.geburtsdatum?" · geb. "+deDate(m.geburtsdatum):""}${c.minor?"<br><b>Minderjährig</b> – unterschrieben mit "+esc((c.guardian||{}).name||"Erziehungsberechtigten"):""}<br><span class="hint">Prüfcode ${esc(pkg.code)} ✓ · Vertragsinhalt unverändert ✓</span><br><br>Prüf die Daten im Vertrag und unterschreib zum Schluss.`
+      : `Der zurückgeschickte Vertrag stimmt nicht mehr mit dem überein, den du verschickt hast${ok?"":" (Prüfcode passt nicht)"}. Er wird deshalb nicht übernommen.`;
+    $("#recvOk").textContent="Prüfen und unterschreiben"; $("#recvOk").hidden=!same; $("#recvModal").hidden=false; return;
+  }
   if(own){
     const signedNow=c.signatures&&c.signatures.model&&!c.pending;
     if(!(own.pending&&signedNow)){ toast(signedNow?"Dieser Vertrag ist in deinem Archiv schon komplett unterschrieben.":"Diesen Vertrag hast du selbst erstellt – er ist schon in deinem Archiv."); return; }
@@ -2858,6 +3052,14 @@ function sameTerms(a,b){
 }
 $("#recvOk").onclick=()=>{
   if(!recvPkg) return;
+  if(recvPkg.mode==="filled"){
+    const {pkg,own}=recvPkg; const c=pkg.contract; const rec=JSON.parse(JSON.stringify(own));
+    rec.model=c.model; rec.minor=!!c.minor; rec.guardian=c.guardian||{name:""};
+    rec.signatures={...(rec.signatures||{}),model:c.signatures.model}; if(c.signatures.guardian) rec.signatures.guardian=c.signatures.guardian;
+    rec.modelSign=c.modelSign||null; rec.signedViaApp={code:pkg.code,filled:true};
+    Store.save(rec); loadContracts(); $("#recvModal").hidden=true; recvPkg=null;
+    startFinal(rec); return;
+  }
   if(recvPkg.mode==="return"){
     const {pkg,own}=recvPkg; const c=pkg.contract; const rec=JSON.parse(JSON.stringify(own));
     rec.signatures={...(rec.signatures||{}),model:c.signatures.model}; if(c.signatures.guardian) rec.signatures.guardian=c.signatures.guardian;
@@ -2916,6 +3118,216 @@ function fillExtraKeys(){
 $("#socAdd").onclick=()=>{ addSocRow($("#socRows")); $("#socRows").lastElementChild.querySelector("input").focus(); };
 $("#extraAdd").onclick=()=>{ fillExtraKeys(); addExtraRow($("#extraRows")); $("#extraRows").lastElementChild.querySelector("input").focus(); };
 $("#pSocAdd").onclick=()=>{ addSocRow($("#pSocRows")); $("#pSocRows").lastElementChild.querySelector("input").focus(); };
+
+/* ---------- „Model füllt selbst aus“ (Ausfüll-Link) ---------- */
+function b64urlEnc(bytes){ let s=""; for(let i=0;i<bytes.length;i+=0x8000) s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+function b64urlDec(str){ str=str.replace(/-/g,"+").replace(/_/g,"/"); while(str.length%4) str+="="; const bin=atob(str); const a=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return a; }
+async function packLink(obj){
+  let bytes=new TextEncoder().encode(JSON.stringify(obj)), flag="0";
+  try{ if(window.CompressionStream){ const cs=new CompressionStream("deflate-raw"); bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(cs)).arrayBuffer()); flag="1"; } }catch(e){ flag="0"; bytes=new TextEncoder().encode(JSON.stringify(obj)); }
+  return flag+b64urlEnc(bytes);
+}
+async function unpackLink(str){
+  const flag=str[0]; let bytes=b64urlDec(str.slice(1));
+  if(flag==="1"){ const ds=new DecompressionStream("deflate-raw"); bytes=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer()); }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+const webUrl=()=>String(CONFIG.WEB_URL||"").trim();
+function applySelfFill(on){
+  $$('#v-form label.f[data-k="adresse"], #v-form label.f[data-k="geburtsdatum"], #socWrap, #extraWrap').forEach(el=>el.hidden=on||(el.dataset.k==="geburtsdatum"&&noBirth((draft&&draft.tpl&&draft.tpl.body)||"")));
+  if(on){ $("#minorBox").hidden=true; $("#knownBox").hidden=true; }
+  $("#selfFillHint").hidden=!on;
+  $('#v-form label.f[data-k="name"] .lt').textContent=on?"Vorname bzw. Name (freiwillig, für die Nachricht)":"Vor- und Nachname";
+  $('#v-form label.f[data-k="telefon"] .lt').textContent=on?"Telefon (freiwillig, damit sich der richtige Chat öffnet)":"Telefon";
+  if(draft) draft.selfFill=on;
+}
+$("#selfFill").onchange=e=>applySelfFill(e.target.checked);
+function fillMessage(rec,link){
+  const p=rec.photographer||settings.photographer, R=rolesFor(rec);
+  return `Hallo${rec.model.name?" "+firstName(rec.model.name):""}, anbei unser Vertrag zum Ausfüllen und Unterschreiben (${rec.tpl.title}, ${R.ev} am ${deDate(rec.shoot.datum)}). Bitte trag deine Daten ein, lies den Vertrag in Ruhe und unterschreib ihn – danach schickst du ihn mir mit einem Tipp zurück.\n\n📲 Du hast Model Release? PDF antippen → „Mit Model Release öffnen“ (iPhone: in der App bei „+ Hinzufügen“ auswählen).`
+    +(link?`\n\n🌐 Keine Model Release App? Dann nutz einfach diesen Link – er läuft direkt im Browser, ohne Installation:\n${link}`:"")
+    +`\n\nViele Grüße, ${p.name}`;
+}
+async function sendFillLink(rec){
+  const p=rec.photographer||settings.photographer;
+  const from={name:p.name,role:rolesFor(rec).p,telefon:p.telefon||""};
+  const contract=sharePayload(rec); delete contract.awaitingFill; delete contract.fillSentAt; delete contract.selfFill;
+  // 1) Link für alle ohne App
+  let link="";
+  if(webUrl()){ link=webUrl().replace(/#.*$/,"").replace(/\/?$/,"/")+"#fill="+(await packLink({app:"model-release-fill",v:1,from,contract})); }
+  // 2) PDF zum Ausfüllen für alle mit App
+  const json=JSON.stringify(contract), code=fmtCode(await sha(json));
+  const pkg={app:"model-release-share",v:1,kind:"fill",from,sentAt:new Date().toISOString(),code,contract};
+  const blob=buildPdf(contract,!!rec.demo,{code,b64:utf8b64(JSON.stringify(pkg))});
+  const name=fileName(rec).replace(/\.pdf$/i,"")+"_zum_Ausfuellen.pdf";
+  const text=fillMessage(rec,link), num=waNumber(rec.model.telefon||"");
+  if(link){ try{ if(NATIVE&&NATIVE.copyText) NATIVE.copyText(link); else if(navigator.clipboard) navigator.clipboard.writeText(link); }catch(e){} }
+  if(NATIVE&&NATIVE.shareFile){
+    NATIVE.shareFile(await blobToBase64(blob),name,"application/pdf",num,text,settings.shareApp||"chooser",settings.saveContact===false||!rec.model.name?"":rec.model.name);
+  } else saveFile(blob,name,"application/pdf");
+  if(!link) toast("Hinweis: Ohne Adresse der Web-App (CONFIG.WEB_URL) gibt es keinen Link – das Model braucht dann die App.");
+  if(!rec.fillSentAt){ rec.fillSentAt=new Date().toISOString(); Store.save(rec); loadContracts(); }
+}
+$("#sendForFill").onclick=async()=>{
+  if(!draft) return;
+  draft.photographer={...settings.photographer};
+  draft.kind="contract"; draft.v=2; draft.demo=!isPro(); draft.pending=true; draft.awaitingFill=true;
+  draft.signatures={}; draft.sign=null; draft.sentAt=new Date().toISOString();
+  draft.id="c"+Date.now();
+  const rec=JSON.parse(JSON.stringify(draft)); delete rec.mode; delete rec.selfFill;
+  Store.save(rec); draft=null; loadContracts(); openDone(rec,true,true);
+  firstHint("fill","So funktioniert's",[
+    "WhatsApp öffnet sich gleich mit der <b>PDF zum Ausfüllen</b> und einem <b>Link</b> – einfach senden.",
+    "Hat das Model die App, öffnet es die PDF mit <b>„Mit Model Release öffnen“</b>. Ohne App nutzt es den <b>Link</b> im Browser. In beiden Fällen <b>trägt es seine Daten ein</b>, liest den Vertrag und <b>unterschreibt</b>.",
+    "Die unterschriebene PDF kommt per WhatsApp zurück. Öffne sie mit <b>„Mit Model Release öffnen“</b> oder über <b>„Ausgefüllt zurück“</b>.",
+    "Du prüfst die Daten und <b>unterschreibst zum Schluss</b> – danach schickst du dem Model die fertige Fassung."],"fill",()=>sendFillLink(rec));
+};
+/* Ausgefüllt zurück: Inhalt prüfen (Daten des Models dürfen neu sein, alles andere nicht) */
+function sameTermsFill(a,b){
+  const k=x=>JSON.stringify([x.tpl&&x.tpl.body,x.tpl&&x.tpl.heading,x.shoot,x.choices||{},x.fields||{},x.zusatz||{}]);
+  return k(a)===k(b);
+}
+function startFinal(rec){
+  draft=JSON.parse(JSON.stringify(rec)); draft.mode="final"; draft.completeId=rec.id;
+  renderReview(); show("review");
+}
+$("#finalSign").onclick=()=>{ prepareSign(); show("sign"); };
+$("#fillSign").onclick=()=>{ prepareSign(); show("sign"); };
+$("#fillReturnFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  const b64=String(await readAsDataURL(f)).split(",")[1];
+  if(!extractPayload(b64)){ toast("Diese PDF enthält keine Daten aus Model Release. Bitte die PDF wählen, die das Model zurückgeschickt hat."); return; }
+  handleIncoming(b64,f.name);
+};
+/* --- Seite des Models: Link öffnen, ausfüllen, unterschreiben --- */
+let fillPkg=null;
+function startFill(pkg,inApp){
+  fillPkg={...pkg,inApp:!!inApp}; if(!inApp) document.body.classList.add("fillmode"); const c=JSON.parse(JSON.stringify(pkg.contract));
+  draft=c; draft.mode="fill"; delete draft.awaitingFill; delete draft.selfFill;
+  const R=rolesFor(c);
+  $("#fillTitle").textContent=`Vertrag von ${pkg.from.name}`;
+  $("#fillLead").textContent=`${c.tpl.title} · ${R.ev} am ${deDate(c.shoot.datum)}${c.shoot.ort?" in "+c.shoot.ort:""}. Bitte trag deine Daten ein. Danach liest du den Vertrag und unterschreibst.`;
+  $("#f_name").value=c.model.name||""; $("#f_adresse").value=c.model.adresse||""; $("#f_telefon").value=c.model.telefon||""; $("#f_geb").value=c.model.geburtsdatum||"";
+  $('[data-fk="geb"]').hidden=noBirth(c.tpl.body);
+  setSoc($("#fSocRows"),socOf(c.model)); setExtra($("#fExtraRows"),c.model.extra||[]);
+  fillMinorUI(); show("fill");
+}
+function fillMinorUI(){ const a=ageAt($("#f_geb").value,draft&&draft.shoot.datum); const m=a!==null&&a<18&&!noBirth(draft.tpl.body); $("#fGuardWrap").hidden=!m; return m; }
+$("#f_geb").onchange=fillMinorUI;
+$("#fSocAdd").onclick=()=>{ addSocRow($("#fSocRows")); $("#fSocRows").lastElementChild.querySelector("input").focus(); };
+$("#fExtraAdd").onclick=()=>{ addExtraRow($("#fExtraRows")); $("#fExtraRows").lastElementChild.querySelector("input").focus(); };
+$("#fillNext").onclick=()=>{
+  const m={name:$("#f_name").value.trim(),adresse:$("#f_adresse").value.trim(),telefon:$("#f_telefon").value.trim(),geburtsdatum:$("#f_geb").value,social:getSoc($("#fSocRows")),extra:getExtra($("#fExtraRows"))};
+  const need=[["name",m.name],["adresse",m.adresse],["telefon",m.telefon]]; if(!noBirth(draft.tpl.body)) need.push(["geb",m.geburtsdatum]);
+  let bad=null; need.forEach(([k,v])=>{ const l=$(`[data-fk="${k}"]`); l.classList.toggle("err",!v); if(!v&&!bad) bad=l; });
+  const minor=fillMinorUI(); const gname=$("#f_gname").value.trim();
+  if(minor){ $('[data-fk="gname"]').classList.toggle("err",!gname); if(!gname&&!bad) bad=$('[data-fk="gname"]'); }
+  if(bad){ toast("Bitte alle markierten Felder ausfüllen."); (bad.querySelector("input")||bad).focus(); return; }
+  if(minor && parseBody(draft.tpl.body).some(b=>b.t==="adult")){ toast("Dieser Vertrag ist nur für Volljährige."); return; }
+  draft.model=m; draft.minor=minor; draft.guardian={name:minor?gname:""};
+  renderReview(); show("review");
+};
+async function sendFilled(so,sd){
+  const rec=JSON.parse(JSON.stringify(draft)); delete rec.mode;
+  rec.signatures={model:pads.model.toPNG()}; if(rec.minor) rec.signatures.guardian=pads.guardian.toPNG();
+  rec.modelSign={ort:so,datum:sd}; rec.sign={ort:so,datum:sd};
+  const json=JSON.stringify(rec), code=fmtCode(await sha(json));
+  const pkg={app:"model-release-share",v:1,kind:"filled",from:{name:rec.model.name,role:rolesFor(rec).m},sentAt:new Date().toISOString(),code,contract:rec};
+  const blob=buildPdf(rec,false,{code,b64:utf8b64(JSON.stringify(pkg))});
+  const name=fileName(rec).replace(/\.pdf$/i,"")+"_ausgefuellt.pdf";
+  const to=fillPkg&&fillPkg.from||{name:"",telefon:""};
+  const text=`Hallo ${firstName(to.name)}, ich habe den Vertrag ausgefüllt und unterschrieben 😊 Viele Grüße, ${rec.model.name}\n\n📲 PDF antippen → „Mit Model Release öffnen“ (oder in der App bei „Ausgefüllt zurück“ auswählen).`;
+  window.__filledPdf={blob,name,text,tel:to.telefon};
+  if(fillPkg&&fillPkg.inApp){
+    const now=new Date().toISOString();
+    const copy={...JSON.parse(JSON.stringify(rec)),id:"r"+rec.id,origId:rec.id,received:{from:{name:to.name,role:rolesFor(rec).p},sentAt:now,at:now,code},signedByMe:true,sentBackAt:now,pending:false};
+    Store.save(copy); loadContracts();
+  }
+  if(NATIVE&&NATIVE.shareFile) NATIVE.shareFile(await blobToBase64(blob),name,"application/pdf",waNumber(to.telefon||""),text,"chooser","");
+  $("#fillDoneText").textContent=`Danke! Schick den Vertrag jetzt per WhatsApp an ${to.name}. Sobald ${firstName(to.name)} ebenfalls unterschrieben hat, bekommst du die fertige Fassung mit beiden Unterschriften.`+(fillPkg&&fillPkg.inApp?" Eine Kopie liegt schon in deinem Archiv.":"");
+  try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+  draft=null; show("filldone");
+}
+$("#fillResendPdf").onclick=async()=>{ const f=window.__filledPdf; if(!f) return; NATIVE.shareFile(await blobToBase64(f.blob),f.name,"application/pdf",waNumber(f.tel||""),f.text,"chooser",""); };
+async function checkFillLink(){
+  if(!/^#fill=/.test(location.hash)) return false;
+  try{ const pkg=await unpackLink(location.hash.slice(6)); if(!pkg||pkg.app!=="model-release-fill"||!pkg.contract) throw 0; startFill(pkg); return true; }
+  catch(e){ toast("Der Link ist unvollständig oder beschädigt. Bitte lass ihn dir noch einmal schicken."); return false; }
+}
+
+/* ---------- In Kalender eintragen ---------- */
+function calEvents(c){
+  const ev=[], R=rolesFor(c), d=dueInfo(c);
+  if(c.shoot&&c.shoot.datum) ev.push({k:"shoot",label:`${R.ev}`,title:`${R.ev} mit ${c.model.name||"Model"}`,date:c.shoot.datum,loc:c.shoot.ort||"",desc:`${c.tpl.title} · erstellt mit Model Release`});
+  if(d&&!d.done) ev.push({k:"due",label:"Bildlieferung",title:`Bilder an ${c.model.name} liefern`,date:d.due,loc:"",desc:`Lieferfrist aus dem ${c.tpl.title} (${R.ev} am ${deDate(c.shoot.datum)}) · Model Release`});
+  return ev;
+}
+function icsFor(evs){
+  const pad=n=>String(n).padStart(2,"0"), stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  const esc2=t=>String(t||"").replace(/\\/g,"\\\\").replace(/[,;]/g,m=>"\\"+m).replace(/\n/g,"\\n");
+  const body=evs.map((e,i)=>{ const d=e.date.replace(/-/g,""); const n=new Date(e.date+"T12:00"); n.setDate(n.getDate()+1);
+    const d2=n.getFullYear()+pad(n.getMonth()+1)+pad(n.getDate());
+    return ["BEGIN:VEVENT",`UID:mr-${Date.now()}-${i}@model-release`,`DTSTAMP:${stamp}`,`DTSTART;VALUE=DATE:${d}`,`DTEND;VALUE=DATE:${d2}`,`SUMMARY:${esc2(e.title)}`,e.loc?`LOCATION:${esc2(e.loc)}`:"",`DESCRIPTION:${esc2(e.desc)}`,
+      "BEGIN:VALARM","TRIGGER:-PT15H","ACTION:DISPLAY",`DESCRIPTION:${esc2(e.title)}`,"END:VALARM","END:VEVENT"].filter(Boolean).join("\r\n"); }).join("\r\n");
+  return "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Model Release//DE\r\n"+body+"\r\nEND:VCALENDAR\r\n";
+}
+function addToCalendar(c,keys){
+  const evs=calEvents(c).filter(e=>keys.includes(e.k)); if(!evs.length) return;
+  if(NATIVE&&NATIVE.addCalendarEvent){
+    evs.forEach((e,i)=>setTimeout(()=>{ const s=new Date(e.date+"T00:00").getTime(); NATIVE.addCalendarEvent(e.title,e.desc,e.loc,s,s+864e5,true); },i*1200));
+  } else {
+    const ics=icsFor(evs); saveFile(new Blob([ics],{type:"text/calendar"}),`Termine_${(c.model.name||"Vertrag").replace(/\s+/g,"_")}.ics`,"text/calendar");
+  }
+}
+function renderCalBox(c){
+  const box=$("#calBox"); const evs=c&&!c.received&&!c.awaitingFill?calEvents(c):[];
+  box.hidden=!evs.length; if(!evs.length) return;
+  $("#calBtns").innerHTML=evs.map(e=>`<button class="btn" data-cal="${e.k}">${e.k==="shoot"?"📅 ":"📦 "}${esc(e.label)} · ${deDate(e.date)}</button>`).join("")+(evs.length>1?`<button class="btn ghost" data-cal="all">Beides</button>`:"");
+  $$("[data-cal]").forEach(b=>b.onclick=()=>addToCalendar(current,b.dataset.cal==="all"?evs.map(e=>e.k):[b.dataset.cal]));
+}
+
+/* ---------- Pay-Shooting-Einnahmen ---------- */
+let incYear=new Date().getFullYear();
+function parseMoney(v){
+  const m=String(v||"").replace(/\s/g,"").match(/(\d{1,3}(?:[.]\d{3})+|\d+)(?:,(\d{1,2}))?/); if(!m) return null;
+  return parseFloat(m[1].replace(/\./g,"")+(m[2]?"."+m[2]:""));
+}
+function incomeOf(c){
+  if(!c||c.received||c.awaitingFill||c.imported) return null;
+  const f=Object.entries(c.fields||{}).find(([k])=>/honorar|vergütung|gage|preis|betrag/i.test(k)&&!/ausfall/i.test(k));
+  if(!f) return null; const amt=parseMoney(f[1]); return amt&&amt>0?amt:null;
+}
+const euro=n=>n.toLocaleString("de-DE",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2})+" €";
+function renderIncome(){
+  const all=contracts.map(c=>({c,a:incomeOf(c)})).filter(x=>x.a!==null);
+  const years=[...new Set(all.map(x=>+String(x.c.shoot.datum||"").slice(0,4)).filter(Boolean))].sort();
+  if(!years.includes(incYear)&&years.length) incYear=years[years.length-1];
+  const list=all.filter(x=>String(x.c.shoot.datum||"").startsWith(String(incYear))).sort((a,b)=>(a.c.shoot.datum||"").localeCompare(b.c.shoot.datum||""));
+  const sum=list.reduce((s,x)=>s+x.a,0), open=list.filter(x=>!x.c.paid).reduce((s,x)=>s+x.a,0);
+  $("#incYear").textContent=incYear;
+  $("#incPrev").disabled=!years.some(y=>y<incYear); $("#incNext").disabled=!years.some(y=>y>incYear);
+  $("#incSum").textContent=euro(sum);
+  $("#incSub").textContent=list.length?`aus ${list.length} ${list.length===1?"Shooting":"Shootings"}${open?` · davon ${euro(open)} offen`:" · alles bezahlt ✓"}`:"Keine Pay-Shootings in diesem Jahr.";
+  const months=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  let h="", lastM=-1;
+  list.forEach(({c,a})=>{ const m=+c.shoot.datum.slice(5,7)-1;
+    if(m!==lastM){ const ms=list.filter(x=>+x.c.shoot.datum.slice(5,7)-1===m).reduce((s,x)=>s+x.a,0); h+=`<h4 class="inc-m"><span>${months[m]}</span><span>${euro(ms)}</span></h4>`; lastM=m; }
+    h+=`<div class="inc-row"><button class="inc-o" data-iopen="${esc(c.id)}"><b>${esc(c.model.name)}</b><small>${deDate(c.shoot.datum)} · ${esc(c.tpl.title)}</small></button><span class="inc-a">${euro(a)}</span><button class="inc-p ${c.paid?"on":""}" data-ipaid="${esc(c.id)}" aria-label="${c.paid?"bezahlt":"als bezahlt markieren"}">${c.paid?"bezahlt ✓":"offen"}</button></div>`; });
+  $("#incList").innerHTML=h||`<p class="hint">Hier erscheinen alle Verträge mit einem Honorar, z. B. aus dem Muster „Pay-Shooting“.</p>`;
+  $$("[data-iopen]").forEach(b=>b.onclick=()=>openDone(contracts.find(c=>c.id===b.dataset.iopen),false));
+  $$("[data-ipaid]").forEach(b=>b.onclick=()=>{ const c=contracts.find(x=>x.id===b.dataset.ipaid); if(!c) return; if(c.paid) delete c.paid; else c.paid={at:new Date().toISOString()}; Store.save(c); loadContracts(); renderIncome(); });
+  $("#incExport").hidden=!list.length;
+  $("#incExport").onclick=()=>{
+    const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+    const rows=[["Datum","Name","Vertrag","Ort","Betrag (EUR)","Status","Bezahlt am"]].concat(list.map(({c,a})=>[deDate(c.shoot.datum),c.model.name,c.tpl.title,c.shoot.ort,a.toFixed(2).replace(".",","),c.paid?"bezahlt":"offen",c.paid?deDate(c.paid.at.slice(0,10)):""]));
+    rows.push(["","","","Summe",sum.toFixed(2).replace(".",","),"",""]);
+    const csv="\ufeff"+rows.map(r=>r.map(q).join(";")).join("\r\n");
+    saveFile(new Blob([csv],{type:"text/csv"}),`Pay-Shooting-Einnahmen_${incYear}.csv`,"text/csv");
+  };
+}
+$("#incOpen").onclick=()=>{ renderIncome(); show("income"); };
+$("#incPrev").onclick=()=>{ incYear--; renderIncome(); };
+$("#incNext").onclick=()=>{ incYear++; renderIncome(); };
 
 /* ---------- Location-Freigaben (Property Release) verknüpfen ---------- */
 const isPropertyDoc=c=>c&&!c.received&&(c.tplId==="m-property"||(noBirth(c.tpl.body)&&/eigentüm/i.test(rolesFor(c).m)));
@@ -3040,7 +3452,11 @@ function openDone(c, fresh, saved){
   current=migrate(c);
   $("#doneSteps").hidden=!fresh || !!c.pending;
   const backTo=c.received?firstName(c.received.from.name):"";
-  $("#doneHead").innerHTML = c.received&&c.pending
+  $("#doneHead").innerHTML = c.awaitingFill
+    ? `<h1>${esc(c.model.name||"Wartet aufs Ausfüllen")}</h1><p class="lead">${esc(c.tpl.title)} · ${esc(rolesFor(c).ev)} am ${deDate(c.shoot.datum)}</p>
+       <div class="banner pend"><p><b>Wartet auf das Model.</b> Es trägt seine Daten über den Link ein und unterschreibt. Kommt die PDF zurück, öffne sie mit „Mit Model Release öffnen“ oder hier über „Ausgefüllt zurück“.</p>
+       <div class="actions" style="margin:0;width:100%"><button class="btn pri" id="fillBack">Ausgefüllt zurück</button><button class="btn" id="fillResend">Link erneut senden</button></div></div>`
+    : c.received&&c.pending
     ? `<h1>${esc(c.model.name)}</h1><p class="lead">${esc(c.tpl.title)} · ${esc(rolesFor(c).ev)} am ${deDate(c.shoot.datum)}</p>
        <div class="banner pend"><p><b>Bitte unterschreiben.</b> ${esc(c.received.from.name)} hat schon unterschrieben – jetzt fehlt nur noch deine Unterschrift${c.minor?" und die der Eltern":""}.</p>
        <div class="actions" style="margin:0;width:100%"><button class="btn pri" id="recvSign">Jetzt unterschreiben</button></div></div>`
@@ -3065,6 +3481,8 @@ function openDone(c, fresh, saved){
   if($("#pendBack")) $("#pendBack").onclick=()=>$("#pendReturnFile").click();
   if($("#pendSign")) $("#pendSign").onclick=()=>startComplete(current);
   if($("#recvSign")) $("#recvSign").onclick=()=>startComplete(current);
+  if($("#fillBack")) $("#fillBack").onclick=()=>$("#fillReturnFile").click();
+  if($("#fillResend")) $("#fillResend").onclick=()=>sendFillLink(current);
   if($("#recvBack")) $("#recvBack").onclick=()=>$("#shareBtn").click();
   if(c.returned) $("#doneHead").insertAdjacentHTML("beforeend",`<div class="banner"><p>Unterschrieben zurückerhalten am ${deDate((c.returnedAt||c.signedAt).slice(0,10))}.</p><button class="btn pri" id="retOpen">PDF öffnen</button></div>`);
   if($("#retOpen")) $("#retOpen").onclick=()=>{ if(NATIVE&&NATIVE.openImport) NATIVE.openImport(current.id); else window.open(URL.createObjectURL(b64ToBlob(Imports.read(current.id),"application/pdf")),"_blank"); };
@@ -3093,15 +3511,16 @@ function openDone(c, fresh, saved){
   $("#addSection").hidden=!contracts.some(x=>x.id===c.id) || !!c.received;
   renderGroupCard(current);
   renderRelated(current);
+  renderCalBox(current);
   renderDueCard(current);
   renderAddenda();
   $("#shareFallback").hidden=true;
   $("#shareBtn").textContent = !settings.shareApp||settings.shareApp==="chooser" ? "Vertrag senden" : "Senden mit "+(settings.shareAppLabel||"App");
   if(c.pending&&!c.received) $("#shareBtn").textContent="Erneut zum Unterschreiben senden";
   if(c.received&&c.signedByMe) $("#shareBtn").textContent="An "+firstName(c.received.from.name)+" zurücksenden";
-  $("#shareBtn").hidden=!!(c.received&&c.pending);
+  $("#shareBtn").hidden=!!(c.received&&c.pending)||!!c.awaitingFill;
   const tg=shareTarget(c);
-  const wa=String(settings.shareApp||"").startsWith("com.whatsapp") && !!waNumber(tg.tel) && !!(NATIVE&&NATIVE.openChat) && !(c.received&&c.pending);
+  const wa=String(settings.shareApp||"").startsWith("com.whatsapp") && !!waNumber(tg.tel) && !!(NATIVE&&NATIVE.openChat) && !(c.received&&c.pending) && !c.awaitingFill;
   $("#chatBtn").hidden=!wa; $("#chatNote").hidden=!wa;
   if(wa){
     $("#chatBtn").textContent=`Chat mit ${firstName(tg.name)} öffnen`;
@@ -3156,7 +3575,7 @@ async function pdfFor(c){
       share={code,b64:utf8b64(JSON.stringify(pkg))};
     }catch(e){ share=null; }
   }
-  return buildPdf(c, c.demo || !isPro(), share);
+  return buildPdf(c, !!c.demo, share);   // Verträge aus der Vollversion bleiben immer ohne Wasserzeichen
 }
 async function savePdf(c){
   try{ const ok=await saveFile(await pdfFor(c),fileName(c),"application/pdf"); if(!NATIVE&&ok) toast("PDF gespeichert."); return ok; }
@@ -3232,7 +3651,7 @@ function buildPdf(c, demo, share){
     if(b.t==="h"){ ensure(14); y+=2; text(fillPlaceholders(b.text,c),{size:11,bold:true,gap:1}); }
     if(b.t==="p") text(fillPlaceholders(b.text,c));
     if(b.t==="field" && !usesPlaceholder(c.tpl.body,b.label)) text(b.label+": "+((c.fields||{})[b.label]||b.def||""));
-    if(b.t==="choice") b.options.forEach((o,i)=>check(c.choices[b.id]===i,fillPlaceholders(o,c)));
+    if(b.t==="choice") b.options.forEach((o,i)=>check(chosen(c,b,i),fillPlaceholders(o,c)));
     if(b.t==="zusatz"){
       text("Zusätzliche Vereinbarungen:",{gap:.8});
       check(c.zusatz.on,"Ja"); check(!c.zusatz.on,"Nein");
@@ -3241,7 +3660,7 @@ function buildPdf(c, demo, share){
   });
 
   y+=4; ensure(50);
-  text(`Ort, Datum: ${c.sign.ort}, ${deDate(c.sign.datum)}`,{gap:4});
+  text(c.sign&&c.sign.ort?`Ort, Datum: ${c.sign.ort}, ${deDate(c.sign.datum)}`:"Ort, Datum: ______________________",{gap:4});
   const sigBlock=(img,label,x)=>{
     if(img){ try{ const pr=doc.getImageProperties(img); const h=22, w=Math.min(72,h*pr.width/pr.height); doc.addImage(img,"PNG",x,y,w,h); }catch(e){} }
     doc.setLineWidth(.3); doc.line(x,y+24,x+75,y+24);
@@ -3607,6 +4026,7 @@ function privacyHTML(){
   <h2>6. Versand von Verträgen</h2>
   <p>Wenn du einen Vertrag oder Nachtrag sendest, übergibt die App die PDF an die App, die du dafür ausgewählt hast (z. B. WhatsApp). Für die Verarbeitung dort gelten deren Datenschutzbestimmungen.</p>
   <p>In von der App erstellten Vertrags-PDFs sind die Vertragsdaten zusätzlich in maschinenlesbarer Form enthalten, damit Empfänger, die Model Release nutzen, den Vertrag mit einem Tipp in ihre App übernehmen können. Enthalten sind nur Daten, die ohnehin im Vertrag stehen; Kontaktdaten anderer Teilnehmender eines Gruppenshootings werden vorher entfernt. Empfangene PDFs werden ausschließlich auf deinem Gerät ausgelesen.</p>
+  <p>Beim Ausfüll-Link („Model füllt selbst aus“) stecken die Vertragsdaten im Link selbst, und zwar in dem Teil hinter dem „#“, den Browser nie an einen Server übertragen. Der Link geht nur über die App, die du dafür auswählst (z. B. WhatsApp). Die Daten, die das Model einträgt, werden nur auf seinem Gerät verarbeitet und mit der unterschriebenen PDF an dich zurückgeschickt.</p>
 
   <h2>7. Zugriff auf Kontakte</h2>
   <p>Nur wenn du zustimmst, darf die App auf deine Kontakte zugreifen: um eine Nummer aus dem Telefonbuch zu übernehmen oder ein Model als Kontakt zu speichern, damit WhatsApp direkt den richtigen Chat öffnet. Kontaktdaten werden dabei nicht an den Entwickler übertragen. Das Speichern als Kontakt kannst du in den Einstellungen abschalten.</p>
@@ -3677,7 +4097,8 @@ $("#openIntro").onclick=openIntro;
 { let x0=null; $("#intro").addEventListener("touchstart",e=>{ x0=e.touches[0].clientX; },{passive:true});
   $("#intro").addEventListener("touchend",e=>{ if(x0===null) return; const dx=e.changedTouches[0].clientX-x0; x0=null;
     if(dx<-50&&introIdx<SLIDES.length-1){ introIdx++; renderIntro(); } else if(dx>50&&introIdx>0){ introIdx--; renderIntro(); } }); }
-if(!KV.get("introSeen",false) && !Store.list().length) openIntro();
+window.__fillMode=/^#fill=/.test(location.hash);
+if(!window.__fillMode && !KV.get("introSeen",false) && !Store.list().length) openIntro();
 
 /* ---------- Vorlage aus PDF erstellen ---------- */
 // Wandelt Textstücke (str, x, y, w, h, page) in Zeilen und daraus in einen Vorlagen-Vorschlag
@@ -3845,6 +4266,7 @@ function edOpenMini(mode){
   $("#edM1").value=""; $("#edM2").value="";
   $("#edM1").placeholder = mode==="@field" ? "Name des Feldes, z. B. Anzahl Bilder" : "Frage, z. B. Darf das Model genannt werden?";
   $("#edM2").placeholder = mode==="@field" ? "Auswahl (freiwillig), z. B. 5, 10, 20" : "Antworten mit Komma, z. B. Ja, Nein";
+  $("#edMultiWrap").hidden=mode!=="@choice"; $("#edMulti").checked=false;
   $("#edMini").hidden=false; $("#edM1").focus();
 }
 $("#edMiniNo").onclick=()=>{ $("#edMini").hidden=true; };
@@ -3853,9 +4275,9 @@ $("#edMiniOk").onclick=()=>{
   const opts=b?b.split(",").map(x=>x.trim().replace(/[\[\]]/g,"")).filter(Boolean):[];
   let t;
   if(edMiniMode==="@field") t=`\n[Feld: ${a}${opts.length?" = "+opts.join(" | "):""}]\n`;
-  else t=`\n${a}\n`+(opts.length?opts:["Ja","Nein"]).map((o,i)=>`[${i===0?"x":" "}] ${o}`).join("\n")+"\n";
+  else { const mu=$("#edMulti").checked; t=`\n${a}\n`+(opts.length?opts:["Ja","Nein"]).map((o,i)=>mu?`[[ ]] ${o}`:`[${i===0?"x":" "}] ${o}`).join("\n")+"\n"; }
   $("#edMini").hidden=true; const ta=edTa(); ta.focus(); ta.setSelectionRange(edPos,edPos); edInsert(t);
-  $("#edTip").textContent = edMiniMode==="@field" ? `Feld „${a}“ eingefügt. Den Wert setzt du im Text mit dem Knopf „${a}“ unter „Deine Felder“ ein.` : "Auswahl eingefügt – die erste Antwort ist vorausgewählt.";
+  $("#edTip").textContent = edMiniMode==="@field" ? `Feld „${a}“ eingefügt. Den Wert setzt du im Text mit dem Knopf „${a}“ unter „Deine Felder“ ein.` : ($("#edMulti").checked?"Mehrfachauswahl eingefügt – beim Ausfüllen können mehrere Antworten angekreuzt werden.":"Auswahl eingefügt – die erste Antwort ist vorausgewählt.");
 };
 function openEdFull(){ $("#edTa").value=$("#t_body").value; renderEdBar(); $("#edMini").hidden=true; $("#edFull").hidden=false; $("#edTip").textContent="Cursor setzen und auf einen Knopf tippen – er wird an dieser Stelle eingefügt."; setTimeout(()=>{ const ta=edTa(); ta.focus(); ta.setSelectionRange(ta.value.length,ta.value.length); },50); }
 function closeEdFull(){ $("#t_body").value=$("#edTa").value; $("#edFull").hidden=true; $('[data-k="tBody"]').classList.remove("err"); }
@@ -3866,14 +4288,28 @@ $("#edTa").addEventListener("input",()=>{ clearTimeout(renderEdBar._t); renderEd
 
 /* ---------- „Was ist neu?“ nach Updates ---------- */
 const CHANGELOG=[
-  {id:"2026-10-d",title:"Neu in diesem Update",withPrev:true,items:[
+  {id:"2026-10-f",title:"Neu in diesem Update",withPrev:true,items:[
+    ["🔗","Model füllt selbst aus",
+     "Hake beim Ausfüllen „Das Model trägt seine Daten selbst ein“ an. Statt der Daten des Models trägst du nur Datum, Ort und deine Auswahlen ein und tippst auf „Zum Ausfüllen senden“. Das Model bekommt per WhatsApp eine PDF zum Ausfüllen und einen Link: Mit Model Release öffnet es die PDF direkt in der App, ohne App nutzt es den Link im Browser – ganz ohne Installation. Dann trägt es seine Daten ein, liest den Vertrag und unterschreibt. Kommt die PDF zurück, öffnest du sie mit „Mit Model Release öffnen“ oder über „Ausgefüllt zurück“, prüfst die Daten und unterschreibst zum Schluss. Danach schickst du dem Model die fertige Fassung. Der Vertrag steckt im Link selbst und liegt auf keinem Server."],
+    ["💶","Pay-Shooting-Einnahmen",
+     "Unter Einstellungen → Pay-Shooting-Einnahmen siehst du die Honorare aus deinen Verträgen pro Jahr, nach Monaten sortiert. Du kannst jedes Shooting als „bezahlt“ markieren und siehst, was noch offen ist. Mit „Als Tabelle exportieren“ bekommst du eine Datei für Excel oder deinen Steuerberater. Die Übersicht ersetzt keine Buchhaltung, und die Daten bleiben auf deinem Gerät."],
+    ["📅","In Kalender eintragen",
+     "Im Vertrag gibt es den Bereich „In Kalender eintragen“: Ein Tipp öffnet deinen Kalender (z. B. Google Kalender) mit einem fertigen Termin für das Shooting oder die Bildlieferung – du musst nur noch speichern. Die App braucht dafür keinen Zugriff auf deinen Kalender. Auf dem iPhone lädt die App eine Kalenderdatei, die du mit einem Tipp übernimmst."],
+    ["🧼","Kein Demo-Wasserzeichen mehr bei Verträgen aus der Vollversion",
+     "Verträge, die du mit der Vollversion erstellt hast, bleiben auch dann ohne „DEMO-VERSION“-Wasserzeichen, wenn du sie später noch einmal verschickst oder speicherst – egal, ob die Lizenz noch läuft."]]},
+  {id:"2026-10-e",title:"Vom letzten Update",withPrev:false,items:[
+    ["📸","Akt-Muster: Art der Aufnahmen",
+     "Im Muster „TfP Akt / Teilakt“ kreuzt du jetzt an, welche Aufnahmen vereinbart sind – auch mehrere: Dessous, verdeckter Akt, Teilakt oder Akt, jeweils mit kurzer Beschreibung. Dazu gibt es ein Feld für weitere Absprachen. Tipp: Im Vorlagen-Editor kannst du bei „Auswahl“ mit „Mehrere Antworten möglich“ solche Listen auch selbst anlegen."],
+    ["🏷️","Namensnennung zum Auswählen",
+     "In allen Mustern legst du jetzt genau fest, wie genannt wird: das Model mit Instagram- bzw. Social-Media-Namen, mit Vor- und Nachnamen, nur mit Vornamen, mit Künstlernamen oder gar nicht – und du selbst mit Social-Media-Namen, mit Namen bzw. Unternehmen oder mit Namen und Webseite. Maßgeblich sind die Namen und Profile im Kopf des Vertrags. Beim Akt-Muster ist „Ohne Namensnennung“ voreingestellt, bei Minderjährigen gibt es nur „Nur mit Vornamen“ oder „Ohne Namensnennung“. Hast du ein Muster selbst bearbeitet, bleibt deine Fassung unverändert."]]},
+  {id:"2026-10-d",title:"Davor",withPrev:false,items:[
     ["📱","Social Media im Vertrag",
      "Beim Ausfüllen kannst du für dein Gegenüber jetzt freiwillig Social-Media-Namen angeben – Instagram, TikTok, Facebook, YouTube, Model-Kartei, Webseite oder eine andere Plattform, auch mehrere. Sie stehen im Vertrag als eigene Zeile unter dem Namen. Deine eigenen trägst du unter Einstellungen → Meine Daten ein; dort ersetzen sie das bisherige Instagram-Feld."],
     ["📝","Weitere Angaben",
      "Mit „+ Weitere Angabe hinzufügen“ ergänzt du beliebige Angaben zum Gegenüber, z. B. Künstlername, E-Mail oder Agentur. Sie erscheinen sauber im Kopf des Vertrags. Bezeichnungen, die du schon einmal benutzt hast, schlägt die App vor."],
     ["📄","Vorlage aus PDF erstellen",
      "Im Vorlagen-Editor gibt es den Knopf „Aus PDF erstellen“. Die App liest einen vorhandenen Vertrag ein und macht daraus einen Vorschlag mit Überschriften, Auswahlen, Feldern und Platzhaltern, den du im Editor prüfst. Eine Anleitung findest du unter Hilfe & Anleitungen."]]},
-  {id:"2026-10-c",title:"Vom letzten Update",items:[
+  {id:"2026-10-c",title:"Ältere Updates",items:[
     ["✍️","Vorlagen-Editor mit Platzhalter-Knöpfen",
      "Tippe in einer eigenen Vorlage auf den Vertragstext – er öffnet sich im Vollbild. Oben findest du Knöpfe für Bausteine (Überschrift, Auswahl, Feld, Zusatzvereinbarungen, Nur ab 18) und für Platzhalter, sortiert nach Model, dir als Fotograf/in und dem Shooting. Ein Tipp setzt den Baustein oder Platzhalter an die Stelle, an der der Cursor steht. Selbst angelegte Felder erscheinen sofort als eigener Knopf unter „Deine Felder“."],
     ["🏢","Unternehmen und Webseite im Vertrag",
@@ -3886,7 +4322,7 @@ const CHANGELOG=[
      "Unter Einstellungen → Hilfe & Anleitungen findest du Schritt-für-Schritt-Anleitungen zum Durchwischen: Vertrag zur Unterschrift senden, erhaltenen Vertrag unterschreiben, Gruppenshooting, Nachtrag, Property Release sowie Sicherung, Sync und App-Sperre. Außerdem erklärt dir die App beim ersten Mal kurz, wie das Senden zur Unterschrift und das Unterschreiben eines erhaltenen Vertrags funktioniert."],
     ["✅","„unterschrieben & zurückgeschickt“",
      "Wenn du einen Vertrag, den du von jemandem bekommen hast, unterschrieben und zurückgeschickt hast, steht das jetzt im Archiv. So siehst du sofort, dass für dich alles erledigt ist."]]},
-  {id:"2026-10-b",title:"Davor",items:[
+  {id:"2026-10-b",title:"Ältere Updates",items:[
     ["🔄","Verträge austauschen und zurückschicken",
      "Nutzt dein Gegenüber auch Model Release, übernimmt es den Vertrag mit einem Tipp in seine App (Android: PDF antippen → „Mit Model Release öffnen“, iPhone: PDF speichern und bei „+ Hinzufügen“ auswählen). Schickst du einen Vertrag zum Unterschreiben, kann er dort unterschrieben und zurückgeschickt werden – die Unterschrift wird dann in deinen Vertrag übernommen. Ein Prüfcode erkennt veränderte Verträge."],
     ["🔒","App-Sperre",
@@ -3917,7 +4353,7 @@ $("#newsMore").onclick=()=>{ KV.set("newsSeen",CHANGELOG[0].id); renderNews(true
 $("#newsOpen").onclick=()=>renderNews(true);
 { const seen=KV.get("newsSeen","");
   if(!seen && !KV.get("introSeen",false) && !Store.list().length) KV.set("newsSeen",CHANGELOG[0].id);   // neue Nutzer sehen die Einführung
-  else if(seen!==CHANGELOG[0].id) setTimeout(()=>renderNews(false),600); }
+  else if(seen!==CHANGELOG[0].id && !window.__fillMode) setTimeout(()=>renderNews(false),600); }
 
 /* ---------- Hilfe & Anleitungen ---------- */
 const GUIDES={
@@ -3935,6 +4371,13 @@ const GUIDES={
     {art:"✍️",h:"3. Mit dem Finger unterschreiben",p:"Unterschreib im Feld (bei Minderjährigen unterschreiben die Eltern mit) und tipp auf:",btn:"Vertrag abschließen"},
     {art:"↩️",h:"4. Zurückschicken",p:"Jetzt nur noch zurück an den Absender – WhatsApp öffnet sich mit seinem Chat:",btn:"An … zurücksenden"},
     {art:"✅",h:"Fertig!",p:"Im Archiv steht „unterschrieben & zurückgeschickt“. Der Absender übernimmt deine Unterschrift mit einem Tipp in seinen Vertrag."}]},
+  selffill:{t:"Model füllt selbst aus",ic:"🔗",s:[
+    {art:"🔗",h:"Das Model trägt seine Daten selbst ein",p:"Praktisch, wenn du das Model noch nicht kennst oder Tippfehler vermeiden willst: Es füllt den Vertrag auf seinem eigenen Handy aus – ohne die App installieren zu müssen."},
+    {art:"☑️",h:"1. Vertrag vorbereiten",p:"Wähle eine Vorlage und hake ganz oben an: „Das Model trägt seine Daten selbst ein“. Trag nur Datum, Ort und deine Auswahlen ein. Name und Telefon kannst du schon angeben, damit sich der richtige Chat öffnet."},
+    {art:"💬",h:"2. Link senden",p:"Prüfe den Vertrag und tippe auf:",btn:"Zum Ausfüllen senden"},
+    {art:"✍️",h:"3. Das Model füllt aus",p:"Das Model bekommt die PDF und einen Link. Mit Model Release öffnet es die PDF direkt in der App („Mit Model Release öffnen“), ohne App nutzt es den Link im Browser. Dann trägt es Name, Adresse, Telefon und Geburtsdatum ein, liest den kompletten Vertrag, unterschreibt und schickt die PDF per WhatsApp an dich zurück."},
+    {art:"📥",h:"4. Prüfen und unterschreiben",p:"PDF antippen → „Mit Model Release öffnen“ (oder im Vertrag „Ausgefüllt zurück“). Prüf die Daten und tipp auf:",btn:"Prüfen und unterschreiben"},
+    {art:"✅",h:"Fertig!",p:"Nach deiner Unterschrift ist der Vertrag komplett. Die App bietet dir direkt an, dem Model die fertige Fassung mit beiden Unterschriften zu schicken.",li:["Der Vertrag steckt im Link selbst – er liegt auf keinem Server.","Am Vertragsinhalt kann das Model nichts ändern, nur seine eigenen Daten eintragen."]}]},
   group:{t:"Gruppenshooting",ic:"👥",s:[
     {art:"👥",h:"Gruppenshooting",p:"Jedes Model bekommt seinen eigenen Vertrag – die App hält sie als Gruppe zusammen."},
     {art:"📝",h:"1. Alle Models eintragen",p:"Wähle das Muster „TfP-Gruppenshooting“. Unter „Weitere Modelle“ trägst du alle anderen mit Name, Adresse, Telefon und Geburtsdatum ein. In den Vertrag kommen davon nur die Namen."},
@@ -4038,7 +4481,7 @@ $("#restoreFile").onchange=async e=>{
 /* ---------- Start ---------- */
 { const st=Store.getSettings(); if(window.__webMode&&st&&!st.shareApp) st.shareApp="chooser"; if(st) settings={photographer:{...DEFAULT_PHOTOGRAPHER,...(st.photographer||{})},signature:st.signature||null,shareApp:st.shareApp||"",shareAppLabel:st.shareAppLabel||"",saveContact:st.saveContact!==false,shareMsg:st.shareMsg||"",roleMe:st.roleMe||"",roleOther:st.roleOther||"",eventWord:st.eventWord||"",logo:st.logo||null}; }
 refreshAll();
-if(setupNeeded()){ renderSettings(); show("settings"); }
+if(window.__fillMode){ checkFillLink(); } else if(setupNeeded()){ renderSettings(); show("settings"); }
 setTimeout(()=>{ recheckLicense(false); checkUpdate(false); checkLicRequest(false); if(syncInfo().connected) runSync(false); scheduleReminders(); },800);
 };
 if(!window.__deferStart) window.__startApp();
